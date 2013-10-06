@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Points On Map</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_dot">Добавление точки</string><string name="button_add">Добавить</string><string name="hint_dot_name">Название точки</string><string name="hint_address">Адрес</string>
+
+</resources>
