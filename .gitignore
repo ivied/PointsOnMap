@@ -2,12 +2,3 @@
 /local.properties
 /.idea/workspace.xml
 .DS_Store
-*.apk
-*.dex
-*.class
-bin/
-gen/
-.project
-*.iml
-*.ipr
-.idea/
