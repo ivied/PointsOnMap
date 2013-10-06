@@ -1,6 +1,9 @@
 package anywayanyday.pointsonmap;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.ImageView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -13,8 +16,10 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 
 public class AsyncYaJob {
 
@@ -26,8 +31,11 @@ public class AsyncYaJob {
 
     public AsyncYaJob(String address, YaListener yaListener) {
         this.yaListener = yaListener;
-        AsyncPointRequest pointRequest = new AsyncPointRequest();
-        pointRequest.execute(address);
+        new AsyncPointRequest().execute(address);
+    }
+
+    public AsyncYaJob(ImageView imageView, String url) {
+        new DownloadImage(imageView).execute(url);
     }
 
     private class AsyncPointRequest extends AsyncTask<String, Void, String> {
@@ -43,6 +51,31 @@ public class AsyncYaJob {
         protected void onPostExecute(String results)
         {
             yaListener.onYaResponse(results);
+        }
+    }
+
+    private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImage(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urlDisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try  {
+                InputStream in = new java.net.URL(urlDisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 
@@ -62,8 +95,6 @@ public class AsyncYaJob {
             in.close();
             client.getConnectionManager().shutdown();
             data = sb.toString();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,9 +108,7 @@ public class AsyncYaJob {
             factory.setNamespaceAware(true);
             parser.setInput(new StringReader(data));
             return parseForGeoData(parser);
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
         return null;
