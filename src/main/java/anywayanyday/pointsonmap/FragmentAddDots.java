@@ -28,12 +28,11 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
     public static final String BUNDLE_NAME = "name";
     public static final String BUNDLE_URL = "url";
-    private OnChangeFragmentListener onChangeFragmentListener;
-
     public static final int VERTICAL_SPACING = 10;
     public static final int HORIZONTAL_SPACING = 10;
     public static final String YANDEX_MAP = "http://static-maps.yandex.ru/1.x/?l=map&pt=";
     public static final String BLUE_DOT = "pm2bll";
+
     private EditText editDotName;
     private EditText editDotAddress;
     private Button buttonAdd;
@@ -41,11 +40,12 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private GridView gridForDots;
     private int displayWidth;
     private int displayHeight;
-    ArrayAdapter<String> adapter;
-    ArrayList<String> dotsName;
-    ImageView imageDotsMap;
-    Map<String, String> dots = new HashMap<>();
+    private ArrayAdapter<String> adapter;
+    private ArrayList<String> dotsName;
+    private ImageView imageDotsMap;
+    private Map<String, String> dots = new HashMap<>();
     private View view;
+    private OnChangeFragmentListener onChangeFragmentListener;
 
 
     @Override

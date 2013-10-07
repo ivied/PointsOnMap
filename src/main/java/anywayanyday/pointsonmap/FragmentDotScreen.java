@@ -16,23 +16,18 @@ import android.widget.TextView;
 public class FragmentDotScreen extends Fragment implements View.OnClickListener {
 
     private OnChangeFragmentListener onChangeFragmentListener;
-    TextView textDotName;
-    Button buttonBack;
-    Button buttonDeleteDot;
-    ImageView imageDotOnMap;
+    private TextView textDotName;
+    private Button buttonBack;
+    private Button buttonDeleteDot;
+    private ImageView imageDotOnMap;
+    private View view;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.dot_on_map, null);
-        textDotName = (TextView) view.findViewById(R.id.textDotName);
-        buttonBack = (Button) view.findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(this);
-        buttonDeleteDot = (Button) view.findViewById(R.id.buttonDeleteDot);
-        buttonDeleteDot.setOnClickListener(this);
-        imageDotOnMap = (ImageView) view.findViewById(R.id.imageDotOnMap);
+        initializeLayout(inflater);
         Bundle bundle = getArguments();
         String dotName = bundle.getString(FragmentAddDots.BUNDLE_NAME).substring(2);
         textDotName.setText(dotName);
@@ -56,5 +51,15 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
         FragmentAddDots fragmentAddDots = new FragmentAddDots();
         onChangeFragmentListener.fragmentChanged(fragmentAddDots);
         MainActivity.replaceFragment(fragmentAddDots, getActivity().getFragmentManager().beginTransaction());
+    }
+
+    private void initializeLayout(LayoutInflater inflater) {
+        view = inflater.inflate(R.layout.dot_on_map, null);
+        textDotName = (TextView) view.findViewById(R.id.textDotName);
+        buttonBack = (Button) view.findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(this);
+        buttonDeleteDot = (Button) view.findViewById(R.id.buttonDeleteDot);
+        buttonDeleteDot.setOnClickListener(this);
+        imageDotOnMap = (ImageView) view.findViewById(R.id.imageDotOnMap);
     }
 }

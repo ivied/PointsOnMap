@@ -9,14 +9,12 @@ import android.view.Menu;
 import static anywayanyday.pointsonmap.FragmentAddDots.*;
 
 public class MainActivity extends Activity implements OnChangeFragmentListener {
+    private Fragment currentFragment =new FragmentAddDots();
 
     @Override
     public void fragmentChanged(Fragment fragment) {
         currentFragment = fragment;
     }
-
-    Fragment currentFragment =new FragmentAddDots();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +52,5 @@ public class MainActivity extends Activity implements OnChangeFragmentListener {
             currentFragment = dotScreen;
         }
         super.onRestoreInstanceState(state);
-
     }
 }
