@@ -1,15 +1,10 @@
 package anywayanyday.pointsonmap;
 
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.ContentValues;
-import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.app.Activity;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
@@ -20,11 +15,15 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends Activity implements View.OnClickListener, AsyncYaJob.YaListener {
 
     public static final int VERTICAL_SPACING = 10;
     public static final int HORIZONTAL_SPACING = 10;
+    public static final String YANDEX_MAP = "http://static-maps.yandex.ru/1.x/?l=map&pt=";
+    public static final String BLUE_DOT = "pm2bll";
     private EditText editDotName;
     private EditText editDotAddress;
     private Button buttonAdd;
@@ -37,6 +36,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Asyn
     ArrayAdapter<String> adapter;
     ArrayList<String> dotsName;
     ImageView imageDotsMap;
+    Map<String, String> dots = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +45,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Asyn
         editDotName = (EditText) findViewById(R.id.editDotName);
         buttonAdd = (Button) findViewById(R.id.buttonAdd);
         buttonAdd.setOnClickListener(this);
-        dbHelper = new DBHelper(this);
-        database = dbHelper.getWritableDatabase();
+        database = new DBHelper(this).getWritableDatabase();
         gridForDots = (GridView) findViewById(R.id.gridForDots);
         dotsName = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(this, R.layout.dot_button, R.id.textDot, dotsName);
@@ -55,9 +54,26 @@ public class MainActivity extends Activity implements View.OnClickListener, Asyn
         getDisplaySize();
         imageDotsMap.setMaxHeight(displayHeight - 100);
         adjustGridView();
-        new AsyncYaJob(imageDotsMap, "http://static-maps.yandex.ru/1.x/?ll=37.677751,55.757718&spn=0.016457,0.00619&l=map&key=ANpUFEkBAAAAf7jmJwMAHGZHrcKNDsbEqEVjEUtCmufxQMwAAAAAAAAAAAAvVrubVT4btztbduoIgTLAeFILaQ==");
+        renewLayout();
 
 
+    }
+
+    private void renewLayout() {
+        dotsName.clear();
+        String url = YANDEX_MAP;
+        Cursor c = database.query("dots", null, null, null, null, null, null);
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            int numb = Integer.parseInt(c.getString(0));
+            String dotName = numb + "." + c.getString(1);
+            addDotToLayout(dotName);
+            String geoLoc = c.getString(2).replace(" ", ",");
+            if (numb != 1) url = url + "~";
+            url = url + geoLoc + "," + BLUE_DOT + numb;
+
+            dots.put(dotName, geoLoc);
+        }
+            new AsyncYaJob(imageDotsMap, url );
     }
 
 
@@ -93,7 +109,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Asyn
         cv.put("name", name);
         cv.put("address", response);
         database.insert("dots", null, cv);
-        addDotToLayout(name);
+        renewLayout();
     }
 
     private void addDotToLayout(String name) {

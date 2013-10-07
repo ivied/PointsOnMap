@@ -43,7 +43,7 @@ public class AsyncYaJob {
         protected String doInBackground(String... params)  {
             String address = params[0];
             address = address.replace(" ", "+");
-            HttpGet request = new HttpGet("http://geocode-maps.yandex.ru/1.x/?results=1&geocode=" + address );
+            HttpGet request = new HttpGet("http://geocode-maps.yandex.ru/1.x/?results=1&geocode=Moskva+" + address );
             return getGeoData(httpRequest(request));
         }
 
