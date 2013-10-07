@@ -12,13 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 
-/**
- * Created by Serv on 07.10.13.
- */
 public class FragmentDotScreen extends Fragment implements View.OnClickListener {
 
     private OnChangeFragmentListener onChangeFragmentListener;
@@ -26,7 +20,8 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
     Button buttonBack;
     Button buttonDeleteDot;
     ImageView imageDotOnMap;
-    String dotName;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,9 +34,10 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
         buttonDeleteDot.setOnClickListener(this);
         imageDotOnMap = (ImageView) view.findViewById(R.id.imageDotOnMap);
         Bundle bundle = getArguments();
-        dotName = bundle.getString(FragmentAddDots.BUNDLE_NAME).substring(2);
+        String dotName = bundle.getString(FragmentAddDots.BUNDLE_NAME).substring(2);
         textDotName.setText(dotName);
-        new AsyncYaJob(imageDotOnMap, bundle.getString(FragmentAddDots.BUNDLE_URL));
+        String mapUrl = bundle.getString(FragmentAddDots.BUNDLE_URL);
+        new AsyncYaJob(imageDotOnMap, mapUrl);
         return view;
     }
 
@@ -59,8 +55,6 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         FragmentAddDots fragmentAddDots = new FragmentAddDots();
         onChangeFragmentListener.fragmentChanged(fragmentAddDots);
-        FragmentTransaction fragmentTransaction = getActivity().getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, fragmentAddDots);
-        fragmentTransaction.commit();
+        MainActivity.replaceFragment(fragmentAddDots, getActivity().getFragmentManager().beginTransaction());
     }
 }

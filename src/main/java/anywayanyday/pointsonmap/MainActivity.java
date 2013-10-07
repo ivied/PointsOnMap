@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import static anywayanyday.pointsonmap.FragmentAddDots.*;
 
 public class MainActivity extends Activity implements OnChangeFragmentListener {
 
@@ -14,42 +15,45 @@ public class MainActivity extends Activity implements OnChangeFragmentListener {
         currentFragment = fragment;
     }
 
-    Fragment currentFragment;
+    Fragment currentFragment =new FragmentAddDots();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-
-        currentFragment = new FragmentAddDots();
     }
 
     @Override
     protected void onResume() {
-
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.add( R.id.fragmentContainer, currentFragment);
-        fragmentTransaction.commit();
+        replaceFragment(currentFragment, getFragmentManager().beginTransaction());
         super.onResume();
+    }
+
+    public static void replaceFragment(Fragment fragment, FragmentTransaction fragmentTransaction) {
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment);
+        fragmentTransaction.commit();
     }
 
     @Override
     public void onSaveInstanceState(Bundle state)
     {
-
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.remove(currentFragment);
-            ft.commit();
-
-
+        if(currentFragment.getClass().equals(FragmentDotScreen.class)){
+           Bundle bundle = currentFragment.getArguments();
+           state.putString(BUNDLE_NAME, bundle.getString(BUNDLE_NAME));
+           state.putString(BUNDLE_URL, bundle.getString(BUNDLE_URL));
+        }
         super.onSaveInstanceState(state);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    protected void onRestoreInstanceState(Bundle state) {
+        if(state.containsKey(BUNDLE_NAME)){
+            Fragment dotScreen = new FragmentDotScreen();
+            dotScreen.setArguments(state);
+            currentFragment = dotScreen;
+        }
+        super.onRestoreInstanceState(state);
 
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
-
-
 }
