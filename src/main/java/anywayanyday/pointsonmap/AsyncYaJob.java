@@ -26,12 +26,12 @@ public class AsyncYaJob {
     private YaListener yaListener;
 
     public interface YaListener{
-        public void onYaResponse(String response);
+        public void onYaResponse(String[] request, String response);
     }
 
-    public AsyncYaJob(String address, YaListener yaListener) {
+    public AsyncYaJob(String [] request, YaListener yaListener) {
         this.yaListener = yaListener;
-        new AsyncPointRequest().execute(address);
+        new AsyncPointRequest().execute(request);
     }
 
     public AsyncYaJob(ImageView imageView, String url) {
@@ -39,18 +39,22 @@ public class AsyncYaJob {
     }
 
     private class AsyncPointRequest extends AsyncTask<String, Void, String> {
+
+        private String[] request;
+
         @Override
-        protected String doInBackground(String... params)  {
-            String address = params[0];
+        protected String doInBackground(String... request)  {
+            this.request = request;
+            String address = request[0];
             address = address.replace(" ", "+");
-            HttpGet request = new HttpGet("http://geocode-maps.yandex.ru/1.x/?results=1&geocode=Moskva+" + address );
-            return getGeoData(httpRequest(request));
+            HttpGet httpRequest = new HttpGet("http://geocode-maps.yandex.ru/1.x/?results=1&geocode=Moskva+" + address);
+            return getGeoData(httpRequest(httpRequest));
         }
 
         @Override
         protected void onPostExecute(String results)
         {
-            yaListener.onYaResponse(results);
+            yaListener.onYaResponse(request, results);
         }
     }
 

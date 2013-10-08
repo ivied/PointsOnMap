@@ -9,13 +9,15 @@ public class Dot implements Serializable{
 
     public static final String DOT_TYPE = "pm2bll";
 
-    int id;
-    String name;
-    String address;
+    final String address;
+    final int id;
+    final String name;
+    final String geoLocation;
 
-    public Dot(int id, String name, String address) {
+    public Dot(int id, String name, String geoLoc, String address) {
         this.id = id;
         this.name = name;
+        this.geoLocation = geoLoc;
         this.address = address;
     }
 
@@ -24,6 +26,6 @@ public class Dot implements Serializable{
     }
 
     String getYaDotPostfix() {
-        return address.replace(" ", ",") + "," + DOT_TYPE;
+        return geoLocation.replace(" ", ",") + "," + DOT_TYPE;
     }
 }

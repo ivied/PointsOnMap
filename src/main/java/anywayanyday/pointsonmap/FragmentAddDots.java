@@ -55,14 +55,13 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onClick(View v) {
-        new AsyncYaJob(editDotAddress.getText().toString(), this);
+        new AsyncYaJob(new String[] {editDotAddress.getText().toString(), editDotName.getText().toString()} , this);
 
     }
 
     @Override
-    public void onYaResponse(String response) {
-        String  name = editDotName.getText().toString();
-        addToDB(response, name);
+    public void onYaResponse(String[] request, String response) {
+        addToDB(request, response);
     }
 
     private void initializeDotsGrid() {
@@ -86,10 +85,11 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         });
     }
 
-    private void addToDB(String response, String name) {
+    private void addToDB(String[] request, String response) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_NAME, name);
-        cv.put(COLUMN_ADDRESS, response);
+        cv.put(COLUMN_NAME, request[1]);
+        cv.put(COLUMN_GEO_LOCATION, response);
+        cv.put(COLUMN_ADDRESS, request[0]);
         database.insert(TABLE_DOTS, null, cv);
         renewLayout();
     }
@@ -98,14 +98,15 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         dotsName.clear();
         String url = YANDEX_MAP;
         Cursor c = database.query(TABLE_DOTS, null, null, null, null, null, null);
-        int i = 0;
+        int i = 1;
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            Dot dot = new Dot(c.getInt(0), c.getString(1), c.getString(2));
-            String dotName = ++i + "." + dot.name;
+            Dot dot = new Dot(c.getInt(0), c.getString(1), c.getString(2) , c.getString(3));
+            String dotName = i + "." + dot.name;
             addDotToLayout(dotName);
             if (i != 1) url = url + "~";
             url = url + dot.getYaDotPostfix() + i;
             dots.put(dotName, dot);
+            i++;
         }
         c.close();
         new AsyncYaJob(imageDotsMap, url );

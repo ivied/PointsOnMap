@@ -14,6 +14,7 @@ import android.widget.TextView;
 public class FragmentDotScreen extends Fragment implements View.OnClickListener {
 
     private TextView textDotName;
+    private TextView textDotAddress;
     private Button buttonBack;
     private Button buttonDeleteDot;
     private ImageView imageDotOnMap;
@@ -28,8 +29,8 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
         initializeLayout(inflater);
         Bundle bundle = getArguments();
         dot = (Dot) bundle.getSerializable(FragmentAddDots.DOT);
-        String dotName = dot.name;
-        textDotName.setText(dotName);
+        textDotName.setText(dot.name);
+        textDotAddress.setText(dot.address);
         new AsyncYaJob(imageDotOnMap,  dot.getYaMapUrl());
         return view;
     }
@@ -56,5 +57,6 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
         buttonDeleteDot = (Button) view.findViewById(R.id.buttonDeleteDot);
         buttonDeleteDot.setOnClickListener(this);
         imageDotOnMap = (ImageView) view.findViewById(R.id.imageDotOnMap);
+        textDotAddress = (TextView) view.findViewById(R.id.textDotAddress);
     }
 }
