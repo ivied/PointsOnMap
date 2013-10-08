@@ -1,9 +1,7 @@
 package anywayanyday.pointsonmap;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.net.Uri;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +13,12 @@ import android.widget.TextView;
 
 public class FragmentDotScreen extends Fragment implements View.OnClickListener {
 
-    private OnChangeFragmentListener onChangeFragmentListener;
     private TextView textDotName;
     private Button buttonBack;
     private Button buttonDeleteDot;
     private ImageView imageDotOnMap;
     private View view;
+    private Dot dot;
 
 
     @Override
@@ -29,27 +27,24 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         initializeLayout(inflater);
         Bundle bundle = getArguments();
-        String dotName = bundle.getString(FragmentAddDots.BUNDLE_NAME).substring(2);
+        dot = (Dot) bundle.getSerializable(FragmentAddDots.DOT);
+        String dotName = dot.name;
         textDotName.setText(dotName);
-        String mapUrl = bundle.getString(FragmentAddDots.BUNDLE_URL);
-        new AsyncYaJob(imageDotOnMap, mapUrl);
+        new AsyncYaJob(imageDotOnMap,  dot.getYaMapUrl());
         return view;
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            onChangeFragmentListener = (OnChangeFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement onSomeEventListener");
+    public void onClick(View v) {
+        if (v.getId() == R.id.buttonDeleteDot){
+            SQLiteDatabase database = new DBHelper(getActivity()).getWritableDatabase();
+            database.delete(DBHelper.TABLE_DOTS, DBHelper.COLUMN_ID + " = ?", new String[] {String.valueOf(dot.id)});
         }
+        backOnMainFragment();
     }
 
-    @Override
-    public void onClick(View v) {
+    private void backOnMainFragment() {
         FragmentAddDots fragmentAddDots = new FragmentAddDots();
-        onChangeFragmentListener.fragmentChanged(fragmentAddDots);
         MainActivity.replaceFragment(fragmentAddDots, getActivity().getFragmentManager().beginTransaction());
     }
 

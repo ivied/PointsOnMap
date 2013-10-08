@@ -1,6 +1,5 @@
 package anywayanyday.pointsonmap;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -21,17 +20,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import static anywayanyday.pointsonmap.DBHelper.*;
-/**
- * Created by Serv on 07.10.13.
- */
+
 public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncYaJob.YaListener {
 
-    public static final String BUNDLE_NAME = "name";
-    public static final String BUNDLE_URL = "url";
     public static final int VERTICAL_SPACING = 10;
     public static final int HORIZONTAL_SPACING = 10;
     public static final String YANDEX_MAP = "http://static-maps.yandex.ru/1.x/?l=map&pt=";
-    public static final String BLUE_DOT = "pm2bll";
+    public static final String DOT = "dot";
 
     private EditText editDotName;
     private EditText editDotAddress;
@@ -43,9 +38,8 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private ArrayAdapter<String> adapter;
     private ArrayList<String> dotsName;
     private ImageView imageDotsMap;
-    private Map<String, String> dots = new HashMap<>();
+    private Map<String, Dot> dots = new HashMap<>();
     private View view;
-    private OnChangeFragmentListener onChangeFragmentListener;
 
 
     @Override
@@ -56,17 +50,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         adjustGridView();
         renewLayout();
         return view;
-    }
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            onChangeFragmentListener = (OnChangeFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement onSomeEventListener");
-        }
     }
 
 
@@ -92,12 +75,11 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 String name = dotsName.get(position);
+                Dot dot = dots.get(name);
                 Bundle bundle = new Bundle();
-                bundle.putString(BUNDLE_NAME, name );
-                bundle.putString(BUNDLE_URL, YANDEX_MAP + dots.get(name) + "," + BLUE_DOT);
+                bundle.putSerializable(DOT, dot);
                 Fragment dotScreen = new FragmentDotScreen();
                 dotScreen.setArguments(bundle);
-                onChangeFragmentListener.fragmentChanged(dotScreen);
                 MainActivity.replaceFragment(dotScreen, getActivity().getFragmentManager().beginTransaction());
                 /*Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_SHORT);*/
             }
@@ -116,14 +98,14 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         dotsName.clear();
         String url = YANDEX_MAP;
         Cursor c = database.query(TABLE_DOTS, null, null, null, null, null, null);
+        int i = 0;
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            int numb = Integer.parseInt(c.getString(0));
-            String dotName = numb + "." + c.getString(1);
+            Dot dot = new Dot(c.getInt(0), c.getString(1), c.getString(2));
+            String dotName = ++i + "." + dot.name;
             addDotToLayout(dotName);
-            String geoLoc = c.getString(2).replace(" ", ",");
-            if (numb != 1) url = url + "~";
-            url = url + geoLoc + "," + BLUE_DOT + numb;
-            dots.put(dotName, geoLoc);
+            if (i != 1) url = url + "~";
+            url = url + dot.getYaDotPostfix() + i;
+            dots.put(dotName, dot);
         }
         c.close();
         new AsyncYaJob(imageDotsMap, url );

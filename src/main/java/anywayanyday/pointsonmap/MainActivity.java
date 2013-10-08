@@ -8,13 +8,9 @@ import android.app.Activity;
 import android.view.Menu;
 import static anywayanyday.pointsonmap.FragmentAddDots.*;
 
-public class MainActivity extends Activity implements OnChangeFragmentListener {
+public class MainActivity extends Activity{
+    public static final String CURRENT_FRAGMENT = "CurrentFragment";
     private Fragment currentFragment =new FragmentAddDots();
-
-    @Override
-    public void fragmentChanged(Fragment fragment) {
-        currentFragment = fragment;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,24 +25,24 @@ public class MainActivity extends Activity implements OnChangeFragmentListener {
     }
 
     public static void replaceFragment(Fragment fragment, FragmentTransaction fragmentTransaction) {
-        fragmentTransaction.replace(R.id.fragmentContainer, fragment);
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment, CURRENT_FRAGMENT);
         fragmentTransaction.commit();
     }
 
     @Override
     public void onSaveInstanceState(Bundle state)
     {
+        Fragment currentFragment = getFragmentManager().findFragmentByTag(CURRENT_FRAGMENT);
         if(currentFragment.getClass().equals(FragmentDotScreen.class)){
-           Bundle bundle = currentFragment.getArguments();
-           state.putString(BUNDLE_NAME, bundle.getString(BUNDLE_NAME));
-           state.putString(BUNDLE_URL, bundle.getString(BUNDLE_URL));
+            Bundle bundle = currentFragment.getArguments();
+          state.putSerializable(DOT, bundle.getSerializable(DOT));
         }
         super.onSaveInstanceState(state);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
-        if(state.containsKey(BUNDLE_NAME)){
+        if(state.containsKey(DOT)){
             Fragment dotScreen = new FragmentDotScreen();
             dotScreen.setArguments(state);
             currentFragment = dotScreen;
