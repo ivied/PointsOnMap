@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,13 +58,33 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onClick(View v) {
-        new AsyncYaJob(new String[] {editDotAddress.getText().toString(), editDotName.getText().toString()} , this);
+        String dotName = editDotName.getText().toString();
+        if(dotName.trim().equalsIgnoreCase("")) {
+            sendToast(getResources().getString(R.id.toast_wrong_name));
+            return;
+        }
+        new AsyncYaJob(new String[] {editDotAddress.getText().toString(), dotName} , this);
 
     }
 
     @Override
+    public Context getContext() {
+        return getActivity();
+    }
+
+    @Override
     public void onYaResponse(String[] request, String response) {
+        if(response == null){
+            sendToast(getResources().getString(R.id.toast_no_one_object_found));
+             return;
+        }
         addToDB(request, response);
+        renewLayout();
+    }
+
+    @Override
+    public void sendToast(String text) {
+        Toast.makeText(getActivity(),  text, Toast.LENGTH_SHORT).show();
     }
 
     private void initializeDotsGrid() {
@@ -82,7 +103,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
                 Fragment dotScreen = new FragmentDotScreen();
                 dotScreen.setArguments(bundle);
                 MainActivity.replaceFragment(dotScreen, getActivity().getFragmentManager().beginTransaction());
-                /*Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_SHORT);*/
+
             }
         });
     }
@@ -93,7 +114,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         cv.put(COLUMN_GEO_LOCATION, response);
         cv.put(COLUMN_ADDRESS, request[0]);
         database.insert(TABLE_DOTS, null, cv);
-        renewLayout();
     }
 
     private void renewLayout() {

@@ -3,6 +3,11 @@
 
     <string name="app_name">Points On Map</string>
     <string name="action_settings">Settings</string>
-    <string name="add_dot">Добавление точки</string><string name="button_add">Добавить</string><string name="hint_dot_name">Название точки</string><string name="hint_address">Адрес</string><string name="textDotsOnMap">Точки на карте</string><string name="btn_back">Назад</string><string name="btn_delete_dot">Удалить точку</string>
+    <string name="add_dot">Добавление точки</string><string name="button_add">Добавить</string><string name="hint_dot_name">Название точки</string><string name="hint_address">Адрес</string><string name="textDotsOnMap">Точки на карте</string>
+    <string name="btn_back">Назад</string>
+    <string name="btn_delete_dot">Удалить точку</string>
 
+    <item name="toast_wrong_name" type="id">Попробуйте ввести другое название точки</item>
+    <item name="toast_no_one_object_found" type="id">По вашему запросу ничего не найдено. Попробуйте уточнить запрос. </item>
+    <item name="start_adv_search" type="id">Запущен расширенный поиск...</item>
 </resources>

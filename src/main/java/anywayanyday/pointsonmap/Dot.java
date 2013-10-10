@@ -14,10 +14,10 @@ public class Dot implements Serializable{
     final String name;
     final String geoLocation;
 
-    public Dot(int id, String name, String geoLoc, String address) {
+    public Dot(int id, String name, String geoLocation, String address) {
         this.id = id;
         this.name = name;
-        this.geoLocation = geoLoc;
+        this.geoLocation = geoLocation;
         this.address = address;
     }
 
