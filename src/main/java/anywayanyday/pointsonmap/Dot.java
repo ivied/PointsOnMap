@@ -2,12 +2,10 @@ package anywayanyday.pointsonmap;
 
 import java.io.Serializable;
 import static anywayanyday.pointsonmap.FragmentAddDots.*;
-/**
- * Created by Serv on 08.10.13.
- */
+
 public class Dot implements Serializable{
 
-    public static final String DOT_TYPE = "pm2bll";
+    public static final String DOT_TYPE = "pm2pnl";
 
     final String address;
     final int id;
