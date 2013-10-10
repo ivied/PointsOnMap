@@ -3,6 +3,8 @@ package anywayanyday.pointsonmap;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
@@ -32,6 +34,10 @@ public class AsyncYaJob {
 
     public AsyncYaJob(String [] request, YaListener yaListener) {
         this.yaListener = yaListener;
+        if (!isNetworkOnline()) {
+            yaListener.sendToast(yaListener.getContext().getResources().getString(R.id.toast_offline));
+            return;
+        }
         AsyncPointRequest searchInMoscow = new AsyncPointRequest();
         searchInMoscow.isInMoscow = true;
         searchInMoscow.execute(request);
@@ -148,4 +154,14 @@ public class AsyncYaJob {
         return null;
     }
 
+    public boolean isNetworkOnline() {
+        ConnectivityManager CManager =
+                (ConnectivityManager) yaListener.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo NInfo = CManager.getActiveNetworkInfo();
+        if (NInfo != null && NInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+        return false;
+
+    }
 }

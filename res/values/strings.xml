@@ -10,4 +10,5 @@
     <item name="toast_wrong_name" type="id">Попробуйте ввести другое название точки</item>
     <item name="toast_no_one_object_found" type="id">По вашему запросу ничего не найдено. Попробуйте уточнить запрос. </item>
     <item name="start_adv_search" type="id">Запущен расширенный поиск...</item>
+    <item name="toast_offline" type="id">Подключение к интернету отсутствует</item>
 </resources>
