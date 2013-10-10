@@ -2,10 +2,15 @@ package anywayanyday.pointsonmap;
 
 import android.app.Fragment;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,18 +29,15 @@ import static anywayanyday.pointsonmap.DBHelper.*;
 
 public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncYaJob.YaListener {
 
-    public static final int VERTICAL_SPACING = 10;
-    public static final int HORIZONTAL_SPACING = 10;
     public static final String YANDEX_MAP = "http://static-maps.yandex.ru/1.x/?l=map&pt=";
     public static final String DOT = "dot";
+    public static final float COLUMN_ADDITIONAL_SIZE = 90f;
 
     private EditText editDotName;
     private EditText editDotAddress;
     private Button buttonAdd;
     private SQLiteDatabase database;
     private GridView gridForDots;
-    private int displayWidth;
-    private int displayHeight;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> dotsName;
     private ImageView imageDotsMap;
@@ -47,7 +50,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         super.onCreate(savedInstanceState);
         initializeLayout(inflater);
         initializeDotsGrid();
-        adjustGridView();
         renewLayout();
         return view;
     }
@@ -108,8 +110,9 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
             dots.put(dotName, dot);
             i++;
         }
-        c.close();
+        adjustGridView();
         new AsyncYaJob(imageDotsMap, url );
+        c.close();
     }
 
     private void addDotToLayout(String name) {
@@ -118,17 +121,26 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         gridForDots.invalidateViews();
     }
 
-    private void getDisplaySize(){
-        DisplayMetrics displayMetrics  = getResources().getDisplayMetrics();
-        displayWidth = Math.round(displayMetrics.widthPixels / displayMetrics.density);
-        displayHeight = Math.round(displayMetrics.heightPixels / displayMetrics.density);
+    private void adjustGridView() {
+        float columnWidth = getMaxTextSize();
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int  numbColumns = (int) ( metrics.widthPixels /(columnWidth+ COLUMN_ADDITIONAL_SIZE *(metrics.densityDpi / 160f)));
+        gridForDots.setNumColumns(numbColumns);
     }
 
-    private void adjustGridView() {
-        gridForDots.setNumColumns(GridView.AUTO_FIT);
-        gridForDots.setVerticalSpacing(VERTICAL_SPACING);
-        gridForDots.setHorizontalSpacing(HORIZONTAL_SPACING);
+    private float getMaxTextSize() {
+        float maxTextWidth = 0;
+        Rect bounds = new Rect();
+        Paint p = new Paint();
+        p.setTextSize(18);
+        for ( String dotName : dotsName){
+            p.getTextBounds(dotName, 0, dotName.length(), bounds);
+            float dotTextWidth = bounds.width();
+            maxTextWidth = maxTextWidth > dotTextWidth ? maxTextWidth:dotTextWidth;
+        }
+        return maxTextWidth;
     }
+
 
     private void initializeLayout(LayoutInflater inflater) {
         view = inflater.inflate(R.layout.add_dots, null);

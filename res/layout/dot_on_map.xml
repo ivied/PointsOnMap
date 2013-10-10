@@ -5,60 +5,72 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <ScrollView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp">
+        android:id="@+id/scrollView" >
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_back"
-            android:id="@+id/buttonBack"
-            android:layout_gravity="left|center_vertical" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/textDotName"
-            android:layout_gravity="center"
-            android:textSize="20sp"
-            android:gravity="center" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="@android:color/black"
-        android:layout_marginBottom="10dp"/>
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_back"
+                    android:id="@+id/buttonBack"
+                    android:layout_gravity="left|center_vertical" />
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textDotAddress"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_marginBottom="10dp"
-        android:layout_gravity="center"
-        android:textSize="15sp"
-        android:gravity="center" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/textDotName"
+                    android:layout_gravity="center"
+                    android:textSize="20sp"
+                    android:gravity="center" />
+            </LinearLayout>
 
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageDotOnMap"
-        android:layout_marginBottom="10dp"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp"
+                android:background="@android:color/black"
+                android:layout_marginBottom="10dp"/>
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_delete_dot"
-        android:id="@+id/buttonDeleteDot"
-        android:layout_marginBottom="10dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/button_background_red"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textDotAddress"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginBottom="10dp"
+                android:layout_gravity="center"
+                android:textSize="15sp"
+                android:gravity="center" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageDotOnMap"
+                android:layout_marginBottom="10dp"/>
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_delete_dot"
+                android:id="@+id/buttonDeleteDot"
+                android:layout_marginBottom="10dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/button_background_red"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp" />
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
