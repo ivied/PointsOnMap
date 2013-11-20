@@ -5,10 +5,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView" >
 
         <LinearLayout
             android:orientation="vertical"
@@ -54,15 +50,10 @@
                 android:textSize="15sp"
                 android:gravity="center" />
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <FrameLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="300dp"
-                    android:id="@+id/frameMap"/>
-            </RelativeLayout>
+                android:layout_height="300dp"
+                android:id="@+id/frameMap"/>
 
 
             <Button
@@ -76,6 +67,5 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp" />
         </LinearLayout>
-    </ScrollView>
 
 </LinearLayout>
