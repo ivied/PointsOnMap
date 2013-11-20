@@ -8,9 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 public class FragmentDotScreen extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener {
@@ -19,7 +22,7 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
     private TextView textDotAddress;
     private Button buttonBack;
     private Button buttonDeleteDot;
-    private ImageView imageDotOnMap;
+    private FrameLayout frameLayout;
     private View view;
     private Dot dot;
     AsyncDataDownload asyncDataDownload;
@@ -40,7 +43,9 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         } catch (ClassNotFoundException | IllegalAccessException | java.lang.InstantiationException e){
             e.printStackTrace();
         }
-        asyncDataDownload.dataDownload(new DataRequest(imageDotOnMap,  dot.getYaMapUrl()), this);
+        ArrayList<Dot> dots = new ArrayList<Dot>();
+        dots.add(dot);
+        asyncDataDownload.dataDownload(new DataRequest(frameLayout,dots), this);
         return view;
     }
 
@@ -60,12 +65,12 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
 
     private void initializeLayout(LayoutInflater inflater) {
         view = inflater.inflate(R.layout.dot_on_map, null);
+        frameLayout = (FrameLayout) view.findViewById(R.id.frameMap);
         textDotName = (TextView) view.findViewById(R.id.textDotName);
         buttonBack = (Button) view.findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(this);
         buttonDeleteDot = (Button) view.findViewById(R.id.buttonDeleteDot);
         buttonDeleteDot.setOnClickListener(this);
-        imageDotOnMap = (ImageView) view.findViewById(R.id.imageDotOnMap);
         textDotAddress = (TextView) view.findViewById(R.id.textDotAddress);
     }
 

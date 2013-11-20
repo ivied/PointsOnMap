@@ -54,11 +54,16 @@
                 android:textSize="15sp"
                 android:gravity="center" />
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageDotOnMap"
-                android:layout_marginBottom="10dp"/>
+                android:layout_height="fill_parent">
+
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="300dp"
+                    android:id="@+id/frameMap"/>
+            </RelativeLayout>
+
 
             <Button
                 android:layout_width="fill_parent"

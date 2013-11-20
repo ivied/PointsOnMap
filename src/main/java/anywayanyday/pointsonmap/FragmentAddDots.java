@@ -5,10 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +13,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,7 +24,6 @@ import static anywayanyday.pointsonmap.DBHelper.*;
 
 public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncYaJob.DownloaderListener {
 
-    public static final String YANDEX_MAP = "http://static-maps.yandex.ru/1.x/?l=map&pt=";
     public static final String DOT = "dot";
     public static final float COLUMN_ADDITIONAL_SIZE = 90f;
 
@@ -35,13 +31,13 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private EditText editDotAddress;
     private Button buttonAdd;
     private SQLiteDatabase database;
-    private GridView gridForDots;
+    private ListView listForDots;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> dotsName;
-    private ImageView imageDotsMap;
     private Map<String, Dot> dots = new HashMap<>();
     private View view;
-    AsyncDataDownload asyncDataDownload;
+    private FrameLayout frameMap;
+    private AsyncDataDownload asyncDataDownload;
 
 
 
@@ -56,11 +52,17 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
             e.printStackTrace();
         }
         initializeLayout(inflater);
-        initializeDotsGrid();
-        renewLayout();
+
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeDotsGrid();
+        renewLayout();
+
+    }
 
     @Override
     public void onClick(View v) {
@@ -96,8 +98,8 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private void initializeDotsGrid() {
         dotsName = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(getActivity(), R.layout.dot_button, R.id.textDot, dotsName);
-        gridForDots.setAdapter(adapter);
-        gridForDots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listForDots.setAdapter(adapter);
+        listForDots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -114,14 +116,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         });
     }
 
-    public void onYaResponse(String[] request, String response) {
-        if(response == null){
-            sendToast(getResources().getString(R.id.toast_no_one_object_found));
-            return;
-        }
-        // addToDB(request, response);
-        renewLayout();
-    }
 
     private void addToDB(DataRequest request, String response) {
         ContentValues cv = new ContentValues();
@@ -135,48 +129,28 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
     private void renewLayout() {
         dotsName.clear();
-        String url = YANDEX_MAP;
+        ArrayList<Dot> dotsForMap = new ArrayList<Dot>();
         Cursor c = database.query(TABLE_DOTS, null, null, null, null, null, null);
         int i = 1;
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             Dot dot = new Dot(c.getInt(0), c.getString(1), c.getString(2) , c.getString(3));
             String dotName = i + "." + dot.name;
             addDotToLayout(dotName);
-            if (i != 1) url = url + "~";
-            url = url + dot.getYaDotPostfix() + i;
             dots.put(dotName, dot);
+            dotsForMap.add(dot);
             i++;
         }
-        adjustGridView();
-        asyncDataDownload.dataDownload(new DataRequest( imageDotsMap, url), this);
+        asyncDataDownload.dataDownload(new DataRequest( frameMap, dotsForMap), this);
         c.close();
     }
 
     private void addDotToLayout(String name) {
         dotsName.add(name);
         adapter.notifyDataSetChanged();
-        gridForDots.invalidateViews();
+        listForDots.invalidateViews();
     }
 
-    private void adjustGridView() {
-        float columnWidth = getMaxTextSize();
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int  numbColumns = (int) ( metrics.widthPixels /(columnWidth+ COLUMN_ADDITIONAL_SIZE *(metrics.densityDpi / 160f)));
-        gridForDots.setNumColumns(numbColumns);
-    }
 
-    private float getMaxTextSize() {
-        float maxTextWidth = 0;
-        Rect bounds = new Rect();
-        Paint p = new Paint();
-        p.setTextSize(18);
-        for ( String dotName : dotsName){
-            p.getTextBounds(dotName, 0, dotName.length(), bounds);
-            float dotTextWidth = bounds.width();
-            maxTextWidth = maxTextWidth > dotTextWidth ? maxTextWidth:dotTextWidth;
-        }
-        return maxTextWidth;
-    }
 
 
     private void initializeLayout(LayoutInflater inflater) {
@@ -186,9 +160,17 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         buttonAdd = (Button) view.findViewById(R.id.buttonAdd);
         buttonAdd.setOnClickListener(this);
         database = new DBHelper(getActivity()).getWritableDatabase();
-        gridForDots = (GridView) view.findViewById(R.id.gridForDots);
-        imageDotsMap = (ImageView) view.findViewById(R.id.imageDotsMap);
+        listForDots = (ListView) view.findViewById(R.id.listForDots);
+        frameMap = (FrameLayout) view.findViewById(R.id.frameMapOnAdd);
     }
 
 
+    public void onYaResponse(String[] request, String response) {
+        if(response == null){
+            sendToast(getResources().getString(R.id.toast_no_one_object_found));
+            return;
+        }
+        // addToDB(request, response);
+        renewLayout();
+    }
 }

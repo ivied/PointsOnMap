@@ -3,6 +3,7 @@ package anywayanyday.pointsonmap;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import org.apache.http.HttpResponse;
@@ -22,6 +23,8 @@ import java.io.StringReader;
 public class AsyncYaJob extends AsyncDataDownload {
 
 
+    public static final String YANDEX_MAP = "http://static-maps.yandex.ru/1.x/?l=map&pt=";
+
     @Override
     public void dataDownload(DataRequest request, DownloaderListener downloaderListener){
         this.downloaderListener = downloaderListener;
@@ -34,11 +37,22 @@ public class AsyncYaJob extends AsyncDataDownload {
                 downloadPoint(request);
                 break;
             case DataRequest.MAP_TO_IMAGE_VIEW:
-                new DownloadImage(request.getImageView()).execute(request.getUrl());
+                downloadImage(request);
                 break;
 
         }
 
+    }
+
+    private void downloadImage(DataRequest request) {
+        String url = AsyncYaJob.YANDEX_MAP;
+        int i = 1;
+        for (Dot dot : request.getDots()){
+            if (i != 1) url = url + "~";
+            url = url + dot.getYaDotPostfix() + i;
+            i++;
+        }
+        new DownloadImage(request.getFrameWithMap()).execute(url);
     }
 
 
@@ -80,10 +94,13 @@ public class AsyncYaJob extends AsyncDataDownload {
     }
 
     private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+        private final FrameLayout frameMap;
         ImageView bmImage;
 
-        public DownloadImage(ImageView bmImage) {
-            this.bmImage = bmImage;
+        public DownloadImage(FrameLayout frameMap) {
+            this.frameMap = frameMap;
+            bmImage = new ImageView(frameMap.getContext());
+
         }
 
         protected Bitmap doInBackground(String... urls) {
@@ -101,6 +118,7 @@ public class AsyncYaJob extends AsyncDataDownload {
 
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
+            frameMap.addView(bmImage);
         }
     }
 

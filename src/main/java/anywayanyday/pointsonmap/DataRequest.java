@@ -1,22 +1,25 @@
 package anywayanyday.pointsonmap;
 
 
-import android.widget.ImageView;
+import android.widget.FrameLayout;
+
+import java.util.ArrayList;
 
 
 public class DataRequest {
 
     public static final int MAP_TO_IMAGE_VIEW = 1;
     public static final int GEO_DATA = 2;
-    private String url;
-    private ImageView imageView;
+    public static final int UPDATE_MAP = 3;
+    private ArrayList<Dot> dots;
+    private FrameLayout frameWithMap;
     private String dotName;
     private String dotAddress;
     private int requestType;
 
-    public DataRequest( ImageView imageView,  String url){
-        this.imageView = imageView;
-        this.url = url;
+    public DataRequest( FrameLayout frameWithMap,  ArrayList<Dot> dots){
+        this.frameWithMap = frameWithMap;
+        this.dots = dots;
         requestType = MAP_TO_IMAGE_VIEW;
     }
 
@@ -26,16 +29,16 @@ public class DataRequest {
         requestType = GEO_DATA;
     }
 
-    public String getUrl() {
-        return url;
+    public ArrayList<Dot> getDots() {
+        return dots;
     }
 
     public int getRequestType() {
         return requestType;
     }
 
-    public ImageView getImageView() {
-        return imageView;
+    public FrameLayout getFrameWithMap() {
+        return frameWithMap;
     }
 
     public String getDotName() {

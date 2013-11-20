@@ -1,7 +1,6 @@
 package anywayanyday.pointsonmap;
 
 import java.io.Serializable;
-import static anywayanyday.pointsonmap.FragmentAddDots.*;
 
 public class Dot implements Serializable{
 
@@ -20,7 +19,7 @@ public class Dot implements Serializable{
     }
 
     String getYaMapUrl(){
-       return YANDEX_MAP + getYaDotPostfix();
+       return AsyncYaJob.YANDEX_MAP + getYaDotPostfix();
     }
 
     String getYaDotPostfix() {

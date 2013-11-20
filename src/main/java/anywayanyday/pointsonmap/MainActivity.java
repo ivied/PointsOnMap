@@ -14,7 +14,7 @@ import static anywayanyday.pointsonmap.FragmentAddDots.*;
 public class MainActivity extends Activity{
     public static final String CURRENT_FRAGMENT = "CurrentFragment";
     private Fragment currentFragment =new FragmentAddDots();
-    public static final String CURRENT_DOWNLOADER = "anywayanyday.pointsonmap.AsyncYaJob";
+    public static final String CURRENT_DOWNLOADER = "anywayanyday.pointsonmap.AsyncGoogleJob";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +26,8 @@ public class MainActivity extends Activity{
 
     @Override
     protected void onResume() {
-        replaceFragment(currentFragment, getFragmentManager().beginTransaction());
         super.onResume();
+        replaceFragment(currentFragment, getFragmentManager().beginTransaction());
     }
 
     public static void replaceFragment(Fragment fragment, FragmentTransaction fragmentTransaction) {

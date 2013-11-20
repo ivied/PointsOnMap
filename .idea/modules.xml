@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/dd.iml" filepath="$PROJECT_DIR$/dd.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PointsOnMapProject.iml" filepath="$PROJECT_DIR$/PointsOnMapProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-play-services_lib/google-play-services_lib.iml" filepath="$PROJECT_DIR$/google-play-services_lib/google-play-services_lib.iml" />
     </modules>
   </component>
 </project>
