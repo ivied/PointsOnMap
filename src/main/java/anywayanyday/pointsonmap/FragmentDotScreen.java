@@ -1,6 +1,7 @@
 package anywayanyday.pointsonmap;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,9 +10,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
-public class FragmentDotScreen extends Fragment implements View.OnClickListener {
+public class FragmentDotScreen extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener {
 
     private TextView textDotName;
     private TextView textDotAddress;
@@ -20,6 +22,7 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
     private ImageView imageDotOnMap;
     private View view;
     private Dot dot;
+    AsyncDataDownload asyncDataDownload;
 
 
     @Override
@@ -31,7 +34,13 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
         dot = (Dot) bundle.getSerializable(FragmentAddDots.DOT);
         textDotName.setText(dot.name);
         textDotAddress.setText(dot.address);
-        new AsyncYaJob(imageDotOnMap,  dot.getYaMapUrl());
+        try{
+            Class clazz = Class.forName(MainActivity.CURRENT_DOWNLOADER);
+            asyncDataDownload = (AsyncDataDownload) clazz.newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | java.lang.InstantiationException e){
+            e.printStackTrace();
+        }
+        asyncDataDownload.dataDownload(new DataRequest(imageDotOnMap,  dot.getYaMapUrl()), this);
         return view;
     }
 
@@ -58,5 +67,20 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener 
         buttonDeleteDot.setOnClickListener(this);
         imageDotOnMap = (ImageView) view.findViewById(R.id.imageDotOnMap);
         textDotAddress = (TextView) view.findViewById(R.id.textDotAddress);
+    }
+
+    @Override
+    public void onDownloaderResponse(DataRequest request, String response) {
+
+    }
+
+    @Override
+    public void sendToast(String text) {
+        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public Context getContext() {
+        return getActivity();
     }
 }

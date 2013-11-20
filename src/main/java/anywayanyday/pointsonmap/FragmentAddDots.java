@@ -3,14 +3,12 @@ package anywayanyday.pointsonmap;
 import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +18,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import static anywayanyday.pointsonmap.DBHelper.*;
 
-public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncYaJob.YaListener {
+public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncYaJob.DownloaderListener {
 
     public static final String YANDEX_MAP = "http://static-maps.yandex.ru/1.x/?l=map&pt=";
     public static final String DOT = "dot";
@@ -44,11 +41,20 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private ImageView imageDotsMap;
     private Map<String, Dot> dots = new HashMap<>();
     private View view;
+    AsyncDataDownload asyncDataDownload;
+
+
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try{
+            Class clazz = Class.forName(MainActivity.CURRENT_DOWNLOADER);
+            asyncDataDownload = (AsyncDataDownload) clazz.newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | java.lang.InstantiationException e){
+            e.printStackTrace();
+        }
         initializeLayout(inflater);
         initializeDotsGrid();
         renewLayout();
@@ -63,7 +69,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
             sendToast(getResources().getString(R.id.toast_wrong_name));
             return;
         }
-        new AsyncYaJob(new String[] {editDotAddress.getText().toString(), dotName} , this);
+        asyncDataDownload.dataDownload(new DataRequest(editDotAddress.getText().toString(), dotName), this);
 
     }
 
@@ -73,7 +79,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     }
 
     @Override
-    public void onYaResponse(String[] request, String response) {
+    public void onDownloaderResponse(DataRequest request, String response) {
         if(response == null){
             sendToast(getResources().getString(R.id.toast_no_one_object_found));
              return;
@@ -108,13 +114,24 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         });
     }
 
-    private void addToDB(String[] request, String response) {
+    public void onYaResponse(String[] request, String response) {
+        if(response == null){
+            sendToast(getResources().getString(R.id.toast_no_one_object_found));
+            return;
+        }
+        // addToDB(request, response);
+        renewLayout();
+    }
+
+    private void addToDB(DataRequest request, String response) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_NAME, request[1]);
+        cv.put(COLUMN_NAME, request.getDotName());
         cv.put(COLUMN_GEO_LOCATION, response);
-        cv.put(COLUMN_ADDRESS, request[0]);
+        cv.put(COLUMN_ADDRESS, request.getDotAddress());
         database.insert(TABLE_DOTS, null, cv);
     }
+
+
 
     private void renewLayout() {
         dotsName.clear();
@@ -131,7 +148,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
             i++;
         }
         adjustGridView();
-        new AsyncYaJob(imageDotsMap, url );
+        asyncDataDownload.dataDownload(new DataRequest( imageDotsMap, url), this);
         c.close();
     }
 

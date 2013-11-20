@@ -6,15 +6,21 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import static anywayanyday.pointsonmap.FragmentAddDots.*;
 
 public class MainActivity extends Activity{
     public static final String CURRENT_FRAGMENT = "CurrentFragment";
     private Fragment currentFragment =new FragmentAddDots();
+    public static final String CURRENT_DOWNLOADER = "anywayanyday.pointsonmap.AsyncYaJob";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       int available = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+
         setContentView(R.layout.main_activity);
     }
 

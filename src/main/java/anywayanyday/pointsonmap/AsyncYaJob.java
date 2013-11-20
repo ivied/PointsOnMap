@@ -1,10 +1,7 @@
 package anywayanyday.pointsonmap;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
@@ -22,22 +19,30 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
-public class AsyncYaJob {
+public class AsyncYaJob extends AsyncDataDownload {
 
-    private YaListener yaListener;
 
-    public interface YaListener{
-        public void onYaResponse(String[] request, String response);
-        public void sendToast(String text);
-        public Context getContext();
-    }
-
-    public AsyncYaJob(String [] request, YaListener yaListener) {
-        this.yaListener = yaListener;
+    @Override
+    public void dataDownload(DataRequest request, DownloaderListener downloaderListener){
+        this.downloaderListener = downloaderListener;
         if (!isNetworkOnline()) {
-            yaListener.sendToast(yaListener.getContext().getResources().getString(R.id.toast_offline));
+            downloaderListener.sendToast(downloaderListener.getContext().getResources().getString(R.id.toast_offline));
             return;
         }
+        switch (request.getRequestType()) {
+            case DataRequest.GEO_DATA:
+                downloadPoint(request);
+                break;
+            case DataRequest.MAP_TO_IMAGE_VIEW:
+                new DownloadImage(request.getImageView()).execute(request.getUrl());
+                break;
+
+        }
+
+    }
+
+
+    private void downloadPoint(DataRequest request) {
         AsyncPointRequest searchInMoscow = new AsyncPointRequest();
         searchInMoscow.isInMoscow = true;
         searchInMoscow.execute(request);
@@ -45,20 +50,16 @@ public class AsyncYaJob {
 
 
 
-    public AsyncYaJob(ImageView imageView, String url) {
-        new DownloadImage(imageView).execute(url);
-    }
-
-    private class AsyncPointRequest extends AsyncTask<String, Void, String> {
+    private class AsyncPointRequest extends AsyncTask<DataRequest, Void, String> {
 
         public static final String REQUEST_IN_MOSCOW = "http://geocode-maps.yandex.ru/1.x/?rspn=1&ll=37.609218,55.753559&spn=0.552069,0.400552&results=1&geocode=";
         public static final String REQUEST_IN_WORLD = "http://geocode-maps.yandex.ru/1.x/?ll=37.609218,55.753559&spn=0.552069,0.400552&results=1&geocode=";
-        private String[] request;
+        private DataRequest request;
         boolean isInMoscow;
         @Override
-        protected String doInBackground(String... request)  {
-            this.request = request;
-            String address = request[0];
+        protected String doInBackground(DataRequest... dataRequest)  {
+            this.request = dataRequest[0];
+            String address = request.getDotAddress();
             address = address.replace(" ", "+");
             HttpGet httpRequest = isInMoscow ? new HttpGet(REQUEST_IN_MOSCOW + address) : new HttpGet(REQUEST_IN_WORLD + address);
             return getGeoData(httpRequest(httpRequest));
@@ -68,12 +69,12 @@ public class AsyncYaJob {
         protected void onPostExecute(String results)
         {
             if (results == null && isInMoscow){
-                yaListener.sendToast(yaListener.getContext().getResources().getString(R.id.start_adv_search));
+                downloaderListener.sendToast(downloaderListener.getContext().getResources().getString(R.id.start_adv_search));
                 AsyncPointRequest searchInMoscow = new AsyncPointRequest();
                 searchInMoscow.isInMoscow = false;
                 searchInMoscow.execute(request);
             }else{
-            yaListener.onYaResponse(request, results);
+            downloaderListener.onDownloaderResponse(request, results);
             }
         }
     }
@@ -154,14 +155,5 @@ public class AsyncYaJob {
         return null;
     }
 
-    public boolean isNetworkOnline() {
-        ConnectivityManager CManager =
-                (ConnectivityManager) yaListener.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo NInfo = CManager.getActiveNetworkInfo();
-        if (NInfo != null && NInfo.isConnectedOrConnecting()) {
-            return true;
-        }
-        return false;
 
-    }
 }
