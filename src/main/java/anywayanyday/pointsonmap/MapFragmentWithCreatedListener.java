@@ -6,7 +6,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 
 
-public class MapFragmentWithCreatedListener extends MapFragment {
+class MapFragmentWithCreatedListener extends MapFragment {
 
     private MapCreatedListener listener;
 

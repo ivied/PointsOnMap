@@ -3,6 +3,8 @@ package anywayanyday.pointsonmap;
 
 import android.widget.FrameLayout;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 
@@ -17,13 +19,13 @@ public class DataRequest {
     private String dotAddress;
     private int requestType;
 
-    public DataRequest( FrameLayout frameWithMap,  ArrayList<Dot> dots){
+    public DataRequest( @NotNull FrameLayout frameWithMap,@NotNull   ArrayList<Dot> dots){
         this.frameWithMap = frameWithMap;
         this.dots = dots;
         requestType = MAP_TO_IMAGE_VIEW;
     }
 
-    public DataRequest ( String dotAddress, String dotName){
+    public DataRequest (@NotNull  String dotAddress,@NotNull  String dotName){
         this.dotAddress = dotAddress;
         this.dotName = dotName;
         requestType = GEO_DATA;

@@ -32,14 +32,11 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private Button buttonAdd;
     private SQLiteDatabase database;
     private ListView listForDots;
-    private ArrayAdapter<String> adapter;
-    private ArrayList<String> dotsName;
-    private Map<String, Dot> dots = new HashMap<>();
+    private CustomAdapter adapter;
     private View view;
     private FrameLayout frameMap;
     private AsyncDataDownload asyncDataDownload;
-
-
+    private ArrayList<Dot> dotsForMap = new ArrayList<>();
 
 
     @Override
@@ -96,16 +93,14 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     }
 
     private void initializeDotsGrid() {
-        dotsName = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(getActivity(), R.layout.dot_button, R.id.textDot, dotsName);
+        adapter = new CustomAdapter(getActivity(),  dotsForMap);
         listForDots.setAdapter(adapter);
         listForDots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                String name = dotsName.get(position);
-                Dot dot = dots.get(name);
+                Dot dot = dotsForMap.get(position);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(DOT, dot);
                 Fragment dotScreen = new FragmentDotScreen();
@@ -128,24 +123,20 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
 
     private void renewLayout() {
-        dotsName.clear();
-        ArrayList<Dot> dotsForMap = new ArrayList<Dot>();
+        dotsForMap.clear();
         Cursor c = database.query(TABLE_DOTS, null, null, null, null, null, null);
         int i = 1;
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             Dot dot = new Dot(c.getInt(0), c.getString(1), c.getString(2) , c.getString(3));
-            String dotName = i + "." + dot.name;
-            addDotToLayout(dotName);
-            dots.put(dotName, dot);
-            dotsForMap.add(dot);
+            addDotToLayout(dot);
             i++;
         }
         asyncDataDownload.dataDownload(new DataRequest( frameMap, dotsForMap), this);
         c.close();
     }
 
-    private void addDotToLayout(String name) {
-        dotsName.add(name);
+    private void addDotToLayout(Dot dot) {
+        dotsForMap.add(dot);
         adapter.notifyDataSetChanged();
         listForDots.invalidateViews();
     }

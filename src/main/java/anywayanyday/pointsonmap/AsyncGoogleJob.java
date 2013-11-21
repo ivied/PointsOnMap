@@ -19,7 +19,7 @@ import java.util.List;
 public class AsyncGoogleJob extends AsyncDataDownload implements  MapFragmentWithCreatedListener.MapCreatedListener{
 
     public static final int MAX_GEOCODE_RESULTS = 1;
-    DataRequest request;
+    private DataRequest request;
 
     @Override
     public void dataDownload(DataRequest request, DownloaderListener downloaderListener) {
@@ -62,7 +62,7 @@ public class AsyncGoogleJob extends AsyncDataDownload implements  MapFragmentWit
     private static final String MAP_FRAGMENT_TAG = "map";
     private GoogleMap mMap;
     private MapFragmentWithCreatedListener mMapFragment;
-    Geocoder geocoder;
+    private Geocoder geocoder;
 
     private void showMap(DataRequest request) {
 
