@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Bundle;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AsyncGoogleJob extends AsyncDataDownload implements  MapFragmentWithCreatedListener.MapCreatedListener{
+public class AsyncGoogleJob extends AsyncDataDownload {
 
     public static final int MAX_GEOCODE_RESULTS = 1;
     private DataRequest request;
@@ -66,7 +67,7 @@ public class AsyncGoogleJob extends AsyncDataDownload implements  MapFragmentWit
 
     private void showMap(DataRequest request) {
 
-        mMapFragment = new MapFragmentWithCreatedListener(this);
+        mMapFragment = new MapFragmentWithCreatedListener();
 
 
         FragmentTransaction fragmentTransaction =
@@ -78,7 +79,6 @@ public class AsyncGoogleJob extends AsyncDataDownload implements  MapFragmentWit
     }
 
 
-    @Override
     public void onGoogleMapCreation() {
 
         mMap = mMapFragment.getMap();
@@ -93,6 +93,24 @@ public class AsyncGoogleJob extends AsyncDataDownload implements  MapFragmentWit
             }
 
         }
+        }
+    }
+    class MapFragmentWithCreatedListener extends MapFragment {
+
+
+        MapFragmentWithCreatedListener (){
+            newInstance(/*new GoogleMapOptions()*/);
+
+        }
+
+
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            onGoogleMapCreation();
+
+
         }
     }
 }
