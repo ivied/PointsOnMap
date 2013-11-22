@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:id="@+id/layout_two_pane">
+    <fragment android:id="@+id/fragment_dot_headlines"
+        android:layout_height="fill_parent"
+        android:name="anywayanyday.pointsonmap.FragmentAddDots"
+        android:layout_width="600dp"
+        android:layout_marginRight="10dp"/>
+    <fragment android:id="@+id/fragment_dot_screen"
+        android:layout_height="fill_parent"
+        android:name="anywayanyday.pointsonmap.FragmentDotScreen"
+        android:layout_width="fill_parent" />
+</LinearLayout>

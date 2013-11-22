@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AsyncGoogleJob extends AsyncDataDownload {
+public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWithCreatedListener.MapCreatedListener {
 
     public static final int MAX_GEOCODE_RESULTS = 1;
     private DataRequest request;
@@ -67,7 +67,7 @@ public class AsyncGoogleJob extends AsyncDataDownload {
 
     private void showMap(DataRequest request) {
 
-        mMapFragment = new MapFragmentWithCreatedListener();
+        mMapFragment = new MapFragmentWithCreatedListener(this);
 
 
         FragmentTransaction fragmentTransaction =
@@ -95,22 +95,5 @@ public class AsyncGoogleJob extends AsyncDataDownload {
         }
         }
     }
-    class MapFragmentWithCreatedListener extends MapFragment {
 
-
-        MapFragmentWithCreatedListener (){
-            newInstance(/*new GoogleMapOptions()*/);
-
-        }
-
-
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            onGoogleMapCreation();
-
-
-        }
-    }
 }
