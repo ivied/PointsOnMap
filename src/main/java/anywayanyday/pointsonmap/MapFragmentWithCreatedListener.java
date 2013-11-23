@@ -23,8 +23,6 @@ public class MapFragmentWithCreatedListener extends MapFragment {
 
     }
 
-
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

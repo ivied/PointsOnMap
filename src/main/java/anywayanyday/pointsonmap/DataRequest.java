@@ -13,7 +13,6 @@ public class DataRequest {
 
     public static final int MAP_TO_IMAGE_VIEW = 1;
     public static final int GEO_DATA = 2;
-    public static final int UPDATE_MAP = 3;
     private ArrayList<Dot> dots;
     private RelativeLayout frameWithMap;
     private String dotName;
