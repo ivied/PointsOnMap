@@ -3,6 +3,7 @@ package anywayanyday.pointsonmap;
 import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -11,11 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import static anywayanyday.pointsonmap.DBHelper.*;
 public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncYaJob.DownloaderListener {
 
     public static final String DOT = "dot";
-    public static final float COLUMN_ADDITIONAL_SIZE = 90f;
 
     private EditText editDotName;
     private EditText editDotAddress;
@@ -33,6 +33,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private SQLiteDatabase database;
     private ListView listForDots;
     private DotListAdapter adapter;
+    Switch switchSearch;
     private View view;
     private RelativeLayout frameMap;
     private AsyncDataDownload asyncDataDownload;
@@ -43,12 +44,13 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try{
-            Class clazz = Class.forName(MainActivity.CURRENT_DOWNLOADER);
+            Class clazz = Class.forName(MainActivity.currentDownloader);
             asyncDataDownload = (AsyncDataDownload) clazz.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | java.lang.InstantiationException e){
             e.printStackTrace();
         }
         initializeLayout(inflater);
+
 
         return view;
     }
@@ -159,7 +161,24 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         database = new DBHelper(getActivity()).getWritableDatabase();
         listForDots = (ListView) view.findViewById(R.id.listForDots);
         frameMap = (RelativeLayout) view.findViewById(R.id.frameMapOnAdd);
-        frameMap.setVisibility(View.INVISIBLE);
+        switchSearch = (Switch) view.findViewById(R.id.switchSearch);
+        switchSearch.setChecked(MainActivity.currentDownloader.equalsIgnoreCase("anywayanyday.pointsonmap.AsyncGoogleJob"));
+        switchSearch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                saveText(isChecked);
+                getActivity().recreate();
+            }
+        });
+    }
+
+    void saveText(boolean isChecked) {
+        String searchService = isChecked? MainActivity.GOOGLE_DOWNLOADER:MainActivity.YANDEX_DOWNLOADER;
+        SharedPreferences sPref = getActivity().getPreferences(getActivity().MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(MainActivity.SEARCH, searchService);
+        ed.commit();
     }
 
 

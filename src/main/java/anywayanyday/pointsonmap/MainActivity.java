@@ -2,38 +2,44 @@ package anywayanyday.pointsonmap;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.res.Configuration;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
-
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import static anywayanyday.pointsonmap.FragmentAddDots.*;
 
 public class MainActivity extends Activity{
     public static final String CURRENT_FRAGMENT = "CurrentFragment";
+    public static final String SEARCH = "search";
     private Fragment currentFragment =new FragmentAddDots();
-    public static final String CURRENT_DOWNLOADER = "anywayanyday.pointsonmap.AsyncGoogleJob";
+    public static final String GOOGLE_DOWNLOADER = "anywayanyday.pointsonmap.AsyncGoogleJob";
+    public static final String YANDEX_DOWNLOADER = "anywayanyday.pointsonmap.AsyncYaJob";
     static  boolean isDualPane = false;
-   FragmentDotScreen fragmentDotScreen;
+    public static String currentDownloader = GOOGLE_DOWNLOADER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       int available = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         setContentView(R.layout.main_layout) ;
+        currentDownloader = loadSearchSettings();
         isDualPane = getResources().getBoolean(R.bool.has_two_panes)/* && isTablet(this)*/;
-
-        fragmentDotScreen = (FragmentDotScreen) getFragmentManager().findFragmentById(
-                 R.id.fragment_dot_screen);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (!isDualPane)  replaceFragment(currentFragment, getFragmentManager().beginTransaction());
+
     }
+
+    private String loadSearchSettings() {
+        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        return sPref.getString(SEARCH, "anywayanyday.pointsonmap.AsyncGoogleJob");
+    }
+
+
 
     public static void replaceFragment(Fragment fragment, FragmentTransaction fragmentTransaction) {
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, CURRENT_FRAGMENT);
@@ -63,9 +69,4 @@ public class MainActivity extends Activity{
         super.onRestoreInstanceState(state);
     }
 
-    private boolean isTablet(Context context) {
-        boolean xlarge = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == 4);
-        boolean large = ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE);
-        return (xlarge || large);
-    }
 }

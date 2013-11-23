@@ -2,15 +2,12 @@ package anywayanyday.pointsonmap;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +42,7 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         textDotName.setText(dot.name);
         textDotAddress.setText(dot.address);
         try{
-            Class clazz = Class.forName(MainActivity.CURRENT_DOWNLOADER);
+            Class clazz = Class.forName(MainActivity.currentDownloader);
             asyncDataDownload = (AsyncDataDownload) clazz.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | java.lang.InstantiationException e){
             e.printStackTrace();

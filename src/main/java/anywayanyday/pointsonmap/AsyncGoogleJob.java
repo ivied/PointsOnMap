@@ -91,8 +91,11 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
         ArrayList<Dot> dots = request.getDots();
         for(Dot dot : dots){
             try {
+            LatLng geoLoc = getGeoData(dot.address, downloaderListener.getContext());
                 mMap.addMarker(new MarkerOptions()
-                        .position(getGeoData(dot.address, downloaderListener.getContext())));
+                        .position(geoLoc)
+                        .title(dot.name + geoLoc.toString()));
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

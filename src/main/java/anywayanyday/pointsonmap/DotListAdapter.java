@@ -67,7 +67,7 @@ public class DotListAdapter extends BaseAdapter {
     }
 
     private String getGeoCode(Dot dot) {
-        if( MainActivity.CURRENT_DOWNLOADER.equalsIgnoreCase("anywayanyday.pointsonmap.AsyncGoogleJob") ){
+        if( MainActivity.currentDownloader.equalsIgnoreCase("anywayanyday.pointsonmap.AsyncGoogleJob") ){
             AsyncGoogleJob asyncGoogleJob = new AsyncGoogleJob();
             try {
                 return  asyncGoogleJob.getGeoData(dot.address, context).toString();
