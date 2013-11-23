@@ -37,7 +37,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private RelativeLayout frameMap;
     private AsyncDataDownload asyncDataDownload;
     private ArrayList<Dot> dotsForMap = new ArrayList<>();
-    private ScrollView scrollView;
 
 
     @Override
@@ -78,10 +77,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         return getActivity();
     }
 
-    @Override
-    public ScrollView getScrollView() {
-        return scrollView;
-    }
 
     @Override
     public void onDownloaderResponse(DataRequest request, String response) {
@@ -165,7 +160,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         listForDots = (ListView) view.findViewById(R.id.listForDots);
         frameMap = (RelativeLayout) view.findViewById(R.id.frameMapOnAdd);
         frameMap.setVisibility(View.INVISIBLE);
-        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
     }
 
 

@@ -12,7 +12,6 @@ abstract public class AsyncDataDownload {
         public void onDownloaderResponse(DataRequest request, String response);
         public void sendToast(String text);
         public Context getContext();
-        public ScrollView getScrollView();
     }
 
 

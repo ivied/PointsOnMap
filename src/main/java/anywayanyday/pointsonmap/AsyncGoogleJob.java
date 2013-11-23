@@ -51,7 +51,6 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
                 }
                 break;
             case DataRequest.MAP_TO_IMAGE_VIEW:
-                // new DownloadImage(request.getFrameWithMap()).execute(request.getDots());
                 showMap(request);
                 break;
 
@@ -72,7 +71,6 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
 
     private void showMap(DataRequest request) {
         RelativeLayout relativeLayout = request.getFrameWithMap();
-        setMapScrollable(relativeLayout);
         mMapFragment = new MapFragmentWithCreatedListener(this);
 
 
@@ -84,36 +82,6 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
 
     }
 
-    private void setMapScrollable(RelativeLayout relativeLayout) {
-        final ScrollView scrollView = downloaderListener.getScrollView();
-        ImageView imageView = (ImageView) relativeLayout.findViewById(R.id.transparent_image);
-        imageView.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getAction();
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN:
-                        // Disallow ScrollView to intercept touch events.
-                        scrollView.requestDisallowInterceptTouchEvent(true);
-                        // Disable touch on transparent view
-                        return false;
-
-                    case MotionEvent.ACTION_UP:
-                        // Allow ScrollView to intercept touch events.
-                        scrollView.requestDisallowInterceptTouchEvent(false);
-                        return true;
-
-                    case MotionEvent.ACTION_MOVE:
-                        scrollView.requestDisallowInterceptTouchEvent(true);
-                        return false;
-
-                    default:
-                        return true;
-                }
-            }
-        });
-    }
 
 
     public void onGoogleMapCreation() {

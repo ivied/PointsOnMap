@@ -26,7 +26,6 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
     private View view;
     private Dot dot;
     AsyncDataDownload asyncDataDownload;
-    ScrollView scrollView;
 
 
     @Override
@@ -73,7 +72,6 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         buttonBack = (Button) view.findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(this);
         textDotAddress = (TextView) view.findViewById(R.id.textDotAddress);
-        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
     }
 
     @Override
@@ -91,8 +89,4 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         return getActivity();
     }
 
-    @Override
-    public ScrollView getScrollView() {
-        return scrollView;
-    }
 }
