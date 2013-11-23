@@ -10,16 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
 import static anywayanyday.pointsonmap.DBHelper.*;
 
 public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncYaJob.DownloaderListener {
@@ -32,11 +32,12 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private Button buttonAdd;
     private SQLiteDatabase database;
     private ListView listForDots;
-    private CustomAdapter adapter;
+    private DotListAdapter adapter;
     private View view;
-    private FrameLayout frameMap;
+    private RelativeLayout frameMap;
     private AsyncDataDownload asyncDataDownload;
     private ArrayList<Dot> dotsForMap = new ArrayList<>();
+    private ScrollView scrollView;
 
 
     @Override
@@ -78,6 +79,11 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     }
 
     @Override
+    public ScrollView getScrollView() {
+        return scrollView;
+    }
+
+    @Override
     public void onDownloaderResponse(DataRequest request, String response) {
         if(response == null){
             sendToast(getResources().getString(R.id.toast_no_one_object_found));
@@ -93,7 +99,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     }
 
     private void initializeDotsGrid() {
-        adapter = new CustomAdapter(getActivity(),  dotsForMap);
+        adapter = new DotListAdapter(this.getContext(),  dotsForMap);
         listForDots.setAdapter(adapter);
         listForDots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -103,10 +109,15 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
                 Dot dot = dotsForMap.get(position);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(DOT, dot);
+                if(MainActivity.isDualPane) {
+                    FragmentDotScreen fragmentDotScreen = (FragmentDotScreen) getActivity()
+                            .getFragmentManager().findFragmentById(R.id.fragment_dot_screen);
+                    fragmentDotScreen.initializeMap(bundle);
+                }else{
                 Fragment dotScreen = new FragmentDotScreen();
                 dotScreen.setArguments(bundle);
                 MainActivity.replaceFragment(dotScreen, getActivity().getFragmentManager().beginTransaction());
-
+                }
             }
         });
     }
@@ -152,7 +163,9 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         buttonAdd.setOnClickListener(this);
         database = new DBHelper(getActivity()).getWritableDatabase();
         listForDots = (ListView) view.findViewById(R.id.listForDots);
-        frameMap = (FrameLayout) view.findViewById(R.id.frameMapOnAdd);
+        frameMap = (RelativeLayout) view.findViewById(R.id.frameMapOnAdd);
+        frameMap.setVisibility(View.INVISIBLE);
+        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
     }
 
 

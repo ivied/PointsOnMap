@@ -9,7 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,11 +22,11 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
     private TextView textDotName;
     private TextView textDotAddress;
     private Button buttonBack;
-    private Button buttonDeleteDot;
-    private FrameLayout frameLayout;
+    private RelativeLayout frameLayout;
     private View view;
     private Dot dot;
     AsyncDataDownload asyncDataDownload;
+    ScrollView scrollView;
 
 
     @Override
@@ -34,6 +35,13 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         initializeLayout(inflater);
         Bundle bundle = getArguments();
+        if(bundle != null)initializeMap(bundle);
+
+        return view;
+    }
+
+    void initializeMap(Bundle bundle) {
+
         dot = (Dot) bundle.getSerializable(FragmentAddDots.DOT);
         textDotName.setText(dot.name);
         textDotAddress.setText(dot.address);
@@ -46,16 +54,11 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         ArrayList<Dot> dots = new ArrayList<Dot>();
         dots.add(dot);
         asyncDataDownload.dataDownload(new DataRequest(frameLayout,dots), this);
-        return view;
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.buttonDeleteDot){
-            SQLiteDatabase database = new DBHelper(getActivity()).getWritableDatabase();
-            database.delete(DBHelper.TABLE_DOTS, DBHelper.COLUMN_ID + " = ?", new String[] {String.valueOf(dot.id)});
-        }
-        backOnMainFragment();
+        if (v.getId() == R.id.buttonBack && !MainActivity.isDualPane)  backOnMainFragment();
     }
 
     private void backOnMainFragment() {
@@ -65,13 +68,12 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
 
     private void initializeLayout(LayoutInflater inflater) {
         view = inflater.inflate(R.layout.dot_on_map, null);
-        frameLayout = (FrameLayout) view.findViewById(R.id.frameMap);
+        frameLayout = (RelativeLayout) view.findViewById(R.id.frameMap);
         textDotName = (TextView) view.findViewById(R.id.textDotName);
         buttonBack = (Button) view.findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(this);
-        buttonDeleteDot = (Button) view.findViewById(R.id.buttonDeleteDot);
-        buttonDeleteDot.setOnClickListener(this);
         textDotAddress = (TextView) view.findViewById(R.id.textDotAddress);
+        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
     }
 
     @Override
@@ -87,5 +89,10 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
     @Override
     public Context getContext() {
         return getActivity();
+    }
+
+    @Override
+    public ScrollView getScrollView() {
+        return scrollView;
     }
 }

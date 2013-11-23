@@ -4,9 +4,15 @@ package anywayanyday.pointsonmap;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -25,7 +31,6 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
     @Override
     public void dataDownload(DataRequest request, DownloaderListener downloaderListener) {
         this.downloaderListener = downloaderListener;
-        geocoder = new Geocoder(downloaderListener.getContext());
         this.request = request;
 
         if (!isNetworkOnline()) {
@@ -37,7 +42,7 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
             case DataRequest.GEO_DATA:
                 //downloadPoint(request);
                 try {
-                    LatLng latLng = getGeoData(request.getDotAddress());
+                    LatLng latLng = getGeoData(request.getDotAddress(), downloaderListener.getContext());
                     String geoData = latLng.latitude + " " + latLng.longitude;
                     downloaderListener.onDownloaderResponse(request, geoData);
                 } catch (IOException e) {
@@ -54,40 +59,72 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
 
     }
 
-    private LatLng getGeoData(String requestAddress) throws IOException {
+    public LatLng getGeoData(String requestAddress, Context context) throws IOException {
+        if (context == null) throw new IOException();
+        Geocoder geocoder = new Geocoder(context);
         List<Address> addresses = geocoder.getFromLocationName(requestAddress, MAX_GEOCODE_RESULTS);
         Address address = addresses.get(0);
         return new LatLng(address.getLongitude(),address.getLatitude());
     }
 
     private static final String MAP_FRAGMENT_TAG = "map";
-    private GoogleMap mMap;
     private MapFragmentWithCreatedListener mMapFragment;
-    private Geocoder geocoder;
 
     private void showMap(DataRequest request) {
-
+        RelativeLayout relativeLayout = request.getFrameWithMap();
+        setMapScrollable(relativeLayout);
         mMapFragment = new MapFragmentWithCreatedListener(this);
 
 
         FragmentTransaction fragmentTransaction =
                 ((Fragment) downloaderListener).getFragmentManager().beginTransaction();
-        fragmentTransaction.add(request.getFrameWithMap().getId(), mMapFragment, MAP_FRAGMENT_TAG);
+        fragmentTransaction.add(relativeLayout.getId(), mMapFragment, MAP_FRAGMENT_TAG);
         fragmentTransaction.commit();
 
 
     }
 
+    private void setMapScrollable(RelativeLayout relativeLayout) {
+        final ScrollView scrollView = downloaderListener.getScrollView();
+        ImageView imageView = (ImageView) relativeLayout.findViewById(R.id.transparent_image);
+        imageView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        scrollView.requestDisallowInterceptTouchEvent(true);
+                        // Disable touch on transparent view
+                        return false;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        scrollView.requestDisallowInterceptTouchEvent(false);
+                        return true;
+
+                    case MotionEvent.ACTION_MOVE:
+                        scrollView.requestDisallowInterceptTouchEvent(true);
+                        return false;
+
+                    default:
+                        return true;
+                }
+            }
+        });
+    }
+
 
     public void onGoogleMapCreation() {
 
-        mMap = mMapFragment.getMap();
+        GoogleMap mMap = mMapFragment.getMap();
         if (mMap != null) {
         ArrayList<Dot> dots = request.getDots();
         for(Dot dot : dots){
             try {
                 mMap.addMarker(new MarkerOptions()
-                        .position(getGeoData(dot.address)));
+                        .position(getGeoData(dot.address, downloaderListener.getContext())));
             } catch (IOException e) {
                 e.printStackTrace();
             }

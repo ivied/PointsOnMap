@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -94,10 +95,10 @@ public class AsyncYaJob extends AsyncDataDownload {
     }
 
     private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-        private final FrameLayout frameMap;
+        private final RelativeLayout frameMap;
         ImageView bmImage;
 
-        public DownloadImage(FrameLayout frameMap) {
+        public DownloadImage(RelativeLayout frameMap) {
             this.frameMap = frameMap;
             bmImage = new ImageView(frameMap.getContext());
 
