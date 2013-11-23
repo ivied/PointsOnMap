@@ -1,5 +1,6 @@
 package anywayanyday.pointsonmap;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
@@ -50,14 +51,13 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
             e.printStackTrace();
         }
         initializeLayout(inflater);
-
-
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        MainActivity.currentDownloader =loadSearchSettings();
         initializeDotsGrid();
         renewLayout();
 
@@ -153,6 +153,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
 
     private void initializeLayout(LayoutInflater inflater) {
+        MainActivity.currentDownloader =loadSearchSettings();
         view = inflater.inflate(R.layout.add_dots, null);
         editDotAddress = (EditText) view.findViewById(R.id.editDotAddress);
         editDotName = (EditText) view.findViewById(R.id.editDotName);
@@ -162,25 +163,29 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         listForDots = (ListView) view.findViewById(R.id.listForDots);
         frameMap = (RelativeLayout) view.findViewById(R.id.frameMapOnAdd);
         switchSearch = (Switch) view.findViewById(R.id.switchSearch);
-        switchSearch.setChecked(MainActivity.currentDownloader.equalsIgnoreCase("anywayanyday.pointsonmap.AsyncGoogleJob"));
+        switchSearch.setChecked(MainActivity.currentDownloader.equalsIgnoreCase(MainActivity.GOOGLE_DOWNLOADER));
         switchSearch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                saveText(isChecked);
+                saveSearchSettings(isChecked);
                 getActivity().recreate();
             }
         });
     }
 
-    void saveText(boolean isChecked) {
+    void saveSearchSettings(boolean isChecked) {
         String searchService = isChecked? MainActivity.GOOGLE_DOWNLOADER:MainActivity.YANDEX_DOWNLOADER;
-        SharedPreferences sPref = getActivity().getPreferences(getActivity().MODE_PRIVATE);
+        SharedPreferences sPref = getActivity().getPreferences(Activity.MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString(MainActivity.SEARCH, searchService);
         ed.commit();
     }
 
+    private String loadSearchSettings() {
+        SharedPreferences sPref = getActivity().getPreferences(Activity.MODE_PRIVATE);
+        return sPref.getString(MainActivity.SEARCH, "anywayanyday.pointsonmap.AsyncGoogleJob");
+    }
 
     public void onYaResponse(String[] request, String response) {
         if(response == null){

@@ -23,7 +23,6 @@ public class MainActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout) ;
-        currentDownloader = loadSearchSettings();
         isDualPane = getResources().getBoolean(R.bool.has_two_panes)/* && isTablet(this)*/;
     }
 
@@ -34,10 +33,7 @@ public class MainActivity extends Activity{
 
     }
 
-    private String loadSearchSettings() {
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        return sPref.getString(SEARCH, "anywayanyday.pointsonmap.AsyncGoogleJob");
-    }
+
 
 
 
