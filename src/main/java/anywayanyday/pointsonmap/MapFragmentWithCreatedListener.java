@@ -15,7 +15,7 @@ public class MapFragmentWithCreatedListener extends MapFragment {
     }
 
     MapFragmentWithCreatedListener (MapCreatedListener mapCreatedListener){
-        newInstance(/*new GoogleMapOptions()*/);
+        newInstance();
         listener = mapCreatedListener;
     }
 

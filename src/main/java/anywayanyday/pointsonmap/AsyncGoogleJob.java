@@ -40,7 +40,6 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
 
         switch (request.getRequestType()) {
             case DataRequest.GEO_DATA:
-                //downloadPoint(request);
                 try {
                     LatLng latLng = getGeoData(request.getDotAddress(), downloaderListener.getContext());
                     String geoData = latLng.latitude + " " + latLng.longitude;
