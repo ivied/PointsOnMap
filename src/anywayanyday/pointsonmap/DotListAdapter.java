@@ -44,17 +44,23 @@ public class DotListAdapter extends BaseAdapter {
         View view = convertView;
         if (view == null) {
             view = lInflater.inflate(R.layout.dot_field, parent, false);
+            ViewHolder holder = new ViewHolder();
+            holder.textDotAddress = (TextView) view.findViewById(R.id.textDotAddress);
+            holder.textDotName = (TextView) view.findViewById(R.id.textDotName);
+            holder.textDotGeoCode = (TextView) view.findViewById(R.id.textDotGeoCode);
+            holder.textDeleteDot = (TextView) view.findViewById(R.id.textDeleteDot);
+            view.setTag(holder);
         }
 
+        ViewHolder holder = (ViewHolder) view.getTag();
         final Dot dot = (Dot) getItem(position);
         String geoCode = getGeoCode(dot);
 
-        ((TextView) view.findViewById(R.id.textDotAddress)).setText(dot.address);
-        ((TextView) view.findViewById(R.id.textDotName)).setText(dot.name);
-        ((TextView) view.findViewById(R.id.textDotGeoCode)).setText(geoCode);
+        holder.textDotAddress.setText(dot.address);
+        holder.textDotName.setText(dot.name);
+        holder.textDotGeoCode.setText(geoCode);
 
-        TextView textDeleteDot = (TextView) view.findViewById(R.id.textDeleteDot);
-        textDeleteDot.setOnClickListener(new View.OnClickListener() {
+        holder.textDeleteDot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                     SQLiteDatabase database = new DBHelper(context).getWritableDatabase();
@@ -77,4 +83,12 @@ public class DotListAdapter extends BaseAdapter {
         }
         return "";
     }
+
+    static class ViewHolder {
+        TextView textDotAddress;
+        TextView textDotName;
+        TextView textDotGeoCode;
+        TextView textDeleteDot;
+    }
+
 }

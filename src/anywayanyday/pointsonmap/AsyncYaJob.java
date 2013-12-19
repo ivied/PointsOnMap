@@ -1,5 +1,6 @@
 package anywayanyday.pointsonmap;
 
+import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -46,14 +47,8 @@ public class AsyncYaJob extends AsyncDataDownload {
     }
 
     private void downloadImage(DataRequest request) {
-        String url = AsyncYaJob.YANDEX_MAP;
-        int i = 1;
-        for (Dot dot : request.getDots()){
-            if (i != 1) url = url + "~";
-            url = url + dot.getYaDotPostfix() + i;
-            i++;
-        }
-        new DownloadImage(request.getFrameWithMap()).execute(url);
+       
+        new DownloadImage().execute(request);
     }
 
 
@@ -94,18 +89,18 @@ public class AsyncYaJob extends AsyncDataDownload {
         }
     }
 
-    private class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-        private final RelativeLayout frameMap;
-        ImageView bmImage;
+    private class DownloadImage extends AsyncTask<DataRequest, Void, Bitmap> {
+        DataRequest request;
 
-        public DownloadImage(RelativeLayout frameMap) {
-            this.frameMap = frameMap;
-            bmImage = new ImageView(frameMap.getContext());
-
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urlDisplay = urls[0];
+        protected Bitmap doInBackground(DataRequest... dataRequest)  {
+            this.request = dataRequest[0];
+            String urlDisplay = AsyncYaJob.YANDEX_MAP;
+            int i = 1;
+            for (Dot dot : request.getDots()){
+                if (i != 1) urlDisplay = urlDisplay + "~";
+                urlDisplay = urlDisplay + dot.getYaDotPostfix() + i;
+                i++;
+            }
             Bitmap mIcon11 = null;
             try  {
                 InputStream in = new java.net.URL(urlDisplay).openStream();
@@ -118,8 +113,7 @@ public class AsyncYaJob extends AsyncDataDownload {
         }
 
         protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-            frameMap.addView(bmImage);
+            downloaderListener.onDownloaderResponse(request, result);
         }
     }
 

@@ -57,7 +57,7 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
 
     }
 
-    public LatLng getGeoData(String requestAddress, Context context) throws IOException {
+    public static LatLng getGeoData(String requestAddress, Context context) throws IOException {
         if (context == null) throw new IOException();
         Geocoder geocoder = new Geocoder(context);
         List<Address> addresses = geocoder.getFromLocationName(requestAddress, MAX_GEOCODE_RESULTS);
@@ -65,24 +65,17 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
         return new LatLng(address.getLongitude(),address.getLatitude());
     }
 
-    private static final String MAP_FRAGMENT_TAG = "map";
     private MapFragmentWithCreatedListener mMapFragment;
 
     private void showMap(DataRequest request) {
-        RelativeLayout relativeLayout = request.getFrameWithMap();
+
         mMapFragment = new MapFragmentWithCreatedListener(this);
-
-
-        FragmentTransaction fragmentTransaction =
-                ((Fragment) downloaderListener).getFragmentManager().beginTransaction();
-        fragmentTransaction.add(relativeLayout.getId(), mMapFragment, MAP_FRAGMENT_TAG);
-        fragmentTransaction.commit();
-
+        downloaderListener.onDownloaderResponse(request, mMapFragment);
 
     }
 
 
-
+    @Override
     public void onGoogleMapCreation() {
 
         GoogleMap mMap = mMapFragment.getMap();

@@ -2,11 +2,13 @@ package anywayanyday.pointsonmap;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +22,16 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static anywayanyday.pointsonmap.DBHelper.*;
 
-public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncYaJob.DownloaderListener {
+public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener {
 
     public static final String DOT = "dot";
 
@@ -34,26 +41,18 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private SQLiteDatabase database;
     private ListView listForDots;
     private DotListAdapter adapter;
-    Switch switchSearch;
+    private Switch switchSearch;
     private View view;
     private RelativeLayout frameMap;
-    private AsyncDataDownload asyncDataDownload;
+    private AsyncDataDownload  asyncDataDownload;
     private ArrayList<Dot> dotsForMap = new ArrayList<Dot>();
-
+    public static final String MAP_FRAGMENT_TAG = "map";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try{
-            Class clazz = Class.forName(MainActivity.currentDownloader);
-            asyncDataDownload = (AsyncDataDownload) clazz.newInstance();
-        } catch (ClassNotFoundException e){
-        	e.printStackTrace();
-        } catch (IllegalAccessException e){
-            e.printStackTrace();
-        } catch ( java.lang.InstantiationException e){
-        	e.printStackTrace();
-        }
+
+     
         initializeLayout(inflater);
         return view;
     }
@@ -61,7 +60,13 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     @Override
     public void onResume() {
         super.onResume();
+
         MainActivity.currentDownloader =loadSearchSettings();
+        if (MainActivity.currentDownloader.equalsIgnoreCase(MainActivity.GOOGLE_DOWNLOADER)){
+            asyncDataDownload = new AsyncGoogleJob();
+        }else {
+            asyncDataDownload = new AsyncYaJob();
+        }
         initializeDotsGrid();
         renewLayout();
 
@@ -83,15 +88,35 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         return getActivity();
     }
 
-
     @Override
-    public void onDownloaderResponse(DataRequest request, String response) {
+    public void onDownloaderResponse(DataRequest request, Object response) {
         if(response == null){
             sendToast(getResources().getString(R.id.toast_no_one_object_found));
              return;
         }
-        addToDB(request, response);
-        renewLayout();
+        switch (request.getRequestType()){
+        
+        case DataRequest.MAP_TO_IMAGE_VIEW:
+            Fragment mapFragment = null;
+            if(asyncDataDownload instanceof AsyncGoogleJob){
+                mapFragment = (MapFragmentWithCreatedListener) response;
+            }
+            if(asyncDataDownload instanceof AsyncYaJob){
+                mapFragment = FragmentWithMap.newInstance((Bitmap) response);
+            }
+            try{
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(frameMap.getId(), mapFragment, MAP_FRAGMENT_TAG);
+                fragmentTransaction.commit();
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            break;
+        case DataRequest.GEO_DATA:
+        	addToDB(request, (String) response);
+            renewLayout();
+        
+        }
     }
 
     @Override
@@ -137,13 +162,11 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private void renewLayout() {
         dotsForMap.clear();
         Cursor c = database.query(TABLE_DOTS, null, null, null, null, null, null);
-        int i = 1;
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             Dot dot = new Dot(c.getInt(0), c.getString(1), c.getString(2) , c.getString(3));
             addDotToLayout(dot);
-            i++;
         }
-        asyncDataDownload.dataDownload(new DataRequest( frameMap, dotsForMap), this);
+        asyncDataDownload.dataDownload(new DataRequest(dotsForMap), this);
         c.close();
     }
 
@@ -157,7 +180,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
 
     private void initializeLayout(LayoutInflater inflater) {
-        MainActivity.currentDownloader =loadSearchSettings();
+        MainActivity.currentDownloader = loadSearchSettings();
         view = inflater.inflate(R.layout.add_dots, null);
         editDotAddress = (EditText) view.findViewById(R.id.editDotAddress);
         editDotName = (EditText) view.findViewById(R.id.editDotName);

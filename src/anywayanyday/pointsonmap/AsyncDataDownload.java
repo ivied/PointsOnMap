@@ -8,8 +8,8 @@ import android.widget.ScrollView;
 
 abstract public class AsyncDataDownload {
 
-    public interface DownloaderListener {
-        public void onDownloaderResponse(DataRequest request, String response);
+    public interface DownloaderListener  {
+        public void onDownloaderResponse(DataRequest request, Object response);
         public void sendToast(String text);
         public Context getContext();
     }

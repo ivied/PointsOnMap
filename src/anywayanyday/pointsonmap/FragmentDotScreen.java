@@ -1,7 +1,9 @@
 package anywayanyday.pointsonmap;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +21,7 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
     private TextView textDotName;
     private TextView textDotAddress;
     private Button buttonBack;
-    private RelativeLayout frameLayout;
+    private RelativeLayout frameMap;
     private View view;
     private Dot dot;
     AsyncDataDownload asyncDataDownload;
@@ -41,15 +43,15 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         dot = (Dot) bundle.getSerializable(FragmentAddDots.DOT);
         textDotName.setText(dot.name);
         textDotAddress.setText(dot.address);
-        try{
-            Class clazz = Class.forName(MainActivity.currentDownloader);
-            asyncDataDownload = (AsyncDataDownload) clazz.newInstance();
-        } catch (Exception e ){
-        	
+        if (MainActivity.currentDownloader.equalsIgnoreCase(MainActivity.GOOGLE_DOWNLOADER)){
+        	asyncDataDownload = new AsyncGoogleJob();
+        } else {
+            asyncDataDownload = new AsyncYaJob();
         }
+ 
         ArrayList<Dot> dots = new ArrayList<Dot>();
         dots.add(dot);
-        asyncDataDownload.dataDownload(new DataRequest(frameLayout,dots), this);
+        asyncDataDownload.dataDownload(new DataRequest(dots), this);
     }
 
     public void onClick(View v) {
@@ -63,7 +65,7 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
 
     private void initializeLayout(LayoutInflater inflater) {
         view = inflater.inflate(R.layout.dot_on_map, null);
-        frameLayout = (RelativeLayout) view.findViewById(R.id.frameMap);
+        frameMap = (RelativeLayout) view.findViewById(R.id.frameMap);
         textDotName = (TextView) view.findViewById(R.id.textDotName);
         buttonBack = (Button) view.findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(this);
@@ -71,8 +73,17 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
     }
 
     @Override
-    public void onDownloaderResponse(DataRequest request, String response) {
-
+    public void onDownloaderResponse(DataRequest request, Object response) {
+        Fragment mapFragment = null;
+        if(asyncDataDownload instanceof AsyncGoogleJob){
+            mapFragment = (MapFragmentWithCreatedListener) response;
+        }
+        if(asyncDataDownload instanceof AsyncYaJob){
+            mapFragment = FragmentWithMap.newInstance((Bitmap) response);
+        }
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(frameMap.getId(), mapFragment, FragmentAddDots.MAP_FRAGMENT_TAG);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -84,5 +95,7 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
     public Context getContext() {
         return getActivity();
     }
+
+
 
 }

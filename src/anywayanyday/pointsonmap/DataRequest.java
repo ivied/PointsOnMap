@@ -14,13 +14,11 @@ public class DataRequest {
     public static final int MAP_TO_IMAGE_VIEW = 1;
     public static final int GEO_DATA = 2;
     private ArrayList<Dot> dots;
-    private RelativeLayout frameWithMap;
     private String dotName;
     private String dotAddress;
     private int requestType;
 
-    public DataRequest( @NotNull RelativeLayout frameWithMap,@NotNull   ArrayList<Dot> dots){
-        this.frameWithMap = frameWithMap;
+    public DataRequest( @NotNull ArrayList<Dot> dots){
         this.dots = dots;
         requestType = MAP_TO_IMAGE_VIEW;
     }
@@ -39,9 +37,6 @@ public class DataRequest {
         return requestType;
     }
 
-    public RelativeLayout getFrameWithMap() {
-        return frameWithMap;
-    }
 
     public String getDotName() {
         return dotName;
