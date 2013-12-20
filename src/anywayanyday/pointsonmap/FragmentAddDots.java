@@ -3,12 +3,16 @@ package anywayanyday.pointsonmap;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,23 +26,15 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
-import static anywayanyday.pointsonmap.DBHelper.*;
 
-public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener {
+public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String DOT = "dot";
-
     private EditText editDotName;
     private EditText editDotAddress;
     private Button buttonAdd;
-    private SQLiteDatabase database;
     private ListView listForDots;
     private DotListAdapter adapter;
     private Switch switchSearch;
@@ -47,13 +43,14 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private AsyncDataDownload  asyncDataDownload;
     private ArrayList<Dot> dotsForMap = new ArrayList<Dot>();
     public static final String MAP_FRAGMENT_TAG = "map";
+    private static final int URL_LOADER = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-     
         initializeLayout(inflater);
+
+        getLoaderManager().initLoader(URL_LOADER, null, this);
         return view;
     }
 
@@ -69,7 +66,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         }
         initializeDotsGrid();
         renewLayout();
-
     }
 
     @Override
@@ -90,32 +86,29 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onDownloaderResponse(DataRequest request, Object response) {
-        if(response == null){
-            sendToast(getResources().getString(R.id.toast_no_one_object_found));
-             return;
-        }
+
         switch (request.getRequestType()){
-        
-        case DataRequest.MAP_TO_IMAGE_VIEW:
-            Fragment mapFragment = null;
-            if(asyncDataDownload instanceof AsyncGoogleJob){
-                mapFragment = (MapFragmentWithCreatedListener) response;
-            }
-            if(asyncDataDownload instanceof AsyncYaJob){
-                mapFragment = FragmentWithMap.newInstance((Bitmap) response);
-            }
-            try{
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(frameMap.getId(), mapFragment, MAP_FRAGMENT_TAG);
-                fragmentTransaction.commit();
-            }catch (NullPointerException e){
-                e.printStackTrace();
-            }
-            break;
-        case DataRequest.GEO_DATA:
-        	addToDB(request, (String) response);
-            renewLayout();
-        
+
+            case DataRequest.MAP_TO_IMAGE_VIEW:
+                Fragment mapFragment = null;
+                if(asyncDataDownload instanceof AsyncGoogleJob){
+                    mapFragment = (MapFragmentWithCreatedListener) response;
+                }
+                if(asyncDataDownload instanceof AsyncYaJob){
+                    mapFragment = FragmentWithMap.newInstance((Bitmap) response);
+                }
+                try{
+                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(frameMap.getId(), mapFragment, MAP_FRAGMENT_TAG);
+                    fragmentTransaction.commit();
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+                break;
+            case DataRequest.GEO_DATA:
+                addToDB(request, (String) response);
+                renewLayout();
+
         }
     }
 
@@ -140,9 +133,9 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
                             .getFragmentManager().findFragmentById(R.id.fragment_dot_screen);
                     fragmentDotScreen.initializeMap(bundle);
                 }else{
-                Fragment dotScreen = new FragmentDotScreen();
-                dotScreen.setArguments(bundle);
-                MainActivity.replaceFragment(dotScreen, getActivity().getFragmentManager().beginTransaction());
+                    Fragment dotScreen = new FragmentDotScreen();
+                    dotScreen.setArguments(bundle);
+                    MainActivity.replaceFragment(dotScreen, getActivity().getFragmentManager().beginTransaction());
                 }
             }
         });
@@ -151,32 +144,26 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
     private void addToDB(DataRequest request, String response) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_NAME, request.getDotName());
-        cv.put(COLUMN_GEO_LOCATION, response);
-        cv.put(COLUMN_ADDRESS, request.getDotAddress());
-        database.insert(TABLE_DOTS, null, cv);
+        cv.put(DotsProvider.COLUMN_NAME, request.getDotName());
+        cv.put(DotsProvider.COLUMN_GEO_LOCATION, response);
+        cv.put(DotsProvider.COLUMN_ADDRESS, request.getDotAddress());
+        getActivity().getContentResolver().insert(DotsProvider.DOTS_CONTENT_URI, cv);
     }
 
 
 
     private void renewLayout() {
-        dotsForMap.clear();
-        Cursor c = database.query(TABLE_DOTS, null, null, null, null, null, null);
-        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-            Dot dot = new Dot(c.getInt(0), c.getString(1), c.getString(2) , c.getString(3));
-            addDotToLayout(dot);
-        }
         asyncDataDownload.dataDownload(new DataRequest(dotsForMap), this);
-        c.close();
     }
 
     private void addDotToLayout(Dot dot) {
+        for( Dot oldDot : dotsForMap){
+            if( oldDot.getId() == dot.getId()) return;
+        }
         dotsForMap.add(dot);
         adapter.notifyDataSetChanged();
         listForDots.invalidateViews();
     }
-
-
 
 
     private void initializeLayout(LayoutInflater inflater) {
@@ -186,8 +173,13 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         editDotName = (EditText) view.findViewById(R.id.editDotName);
         buttonAdd = (Button) view.findViewById(R.id.buttonAdd);
         buttonAdd.setOnClickListener(this);
-        database = new DBHelper(getActivity()).getWritableDatabase();
         listForDots = (ListView) view.findViewById(R.id.listForDots);
+        listForDots.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                renewLayout();
+            }
+        });
         frameMap = (RelativeLayout) view.findViewById(R.id.frameMapOnAdd);
         switchSearch = (Switch) view.findViewById(R.id.switchSearch);
         switchSearch.setChecked(MainActivity.currentDownloader.equalsIgnoreCase(MainActivity.GOOGLE_DOWNLOADER));
@@ -221,5 +213,35 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         }
         // addToDB(request, response);
         renewLayout();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader cursorLoader= new CursorLoader(
+                getActivity(),
+                DotsProvider.DOTS_CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        try{
+            for (data.moveToFirst(); !data.isAfterLast(); data.moveToNext()) {
+                Dot dot = new Dot(data.getInt(0), data.getString(1), data.getString(2) , data.getString(3));
+                addDotToLayout(dot);
+            }
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }

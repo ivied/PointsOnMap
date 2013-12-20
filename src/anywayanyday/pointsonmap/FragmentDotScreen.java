@@ -44,11 +44,11 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         textDotName.setText(dot.name);
         textDotAddress.setText(dot.address);
         if (MainActivity.currentDownloader.equalsIgnoreCase(MainActivity.GOOGLE_DOWNLOADER)){
-        	asyncDataDownload = new AsyncGoogleJob();
+            asyncDataDownload = new AsyncGoogleJob();
         } else {
             asyncDataDownload = new AsyncYaJob();
         }
- 
+
         ArrayList<Dot> dots = new ArrayList<Dot>();
         dots.add(dot);
         asyncDataDownload.dataDownload(new DataRequest(dots), this);
@@ -81,9 +81,13 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
         if(asyncDataDownload instanceof AsyncYaJob){
             mapFragment = FragmentWithMap.newInstance((Bitmap) response);
         }
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(frameMap.getId(), mapFragment, FragmentAddDots.MAP_FRAGMENT_TAG);
-        fragmentTransaction.commit();
+        try{
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(frameMap.getId(), mapFragment, FragmentAddDots.MAP_FRAGMENT_TAG);
+            fragmentTransaction.commit();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
     @Override

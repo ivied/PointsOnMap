@@ -60,13 +60,13 @@ public class DotListAdapter extends BaseAdapter {
         holder.textDotName.setText(dot.name);
         holder.textDotGeoCode.setText(geoCode);
 
+        final View finalView = view;
         holder.textDeleteDot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    SQLiteDatabase database = new DBHelper(context).getWritableDatabase();
-                    if (database != null) database.delete(DBHelper.TABLE_DOTS, DBHelper.COLUMN_ID + " = ?", new String[] {String.valueOf(dot.id)});
-                    dots.remove(dot);
-                    notifyDataSetChanged();
+                finalView.getContext().getContentResolver().delete(DotsProvider.DOTS_CONTENT_URI, DotsProvider.COLUMN_ID + " = ?", new String[]{String.valueOf(dot.id)});
+                dots.remove(dot);
+                notifyDataSetChanged();
             }
         });
         return view;
@@ -74,9 +74,8 @@ public class DotListAdapter extends BaseAdapter {
 
     private String getGeoCode(Dot dot) {
         if( MainActivity.currentDownloader.equalsIgnoreCase("anywayanyday.pointsonmap.AsyncGoogleJob") ){
-            AsyncGoogleJob asyncGoogleJob = new AsyncGoogleJob();
             try {
-                return  asyncGoogleJob.getGeoData(dot.address, context).toString();
+                return  AsyncGoogleJob.getGeoData(dot.address, context).toString();
             } catch (IOException e) {
                 e.printStackTrace();
             }
