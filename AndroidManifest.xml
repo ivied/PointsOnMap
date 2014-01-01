@@ -31,7 +31,8 @@
             </intent-filter>
         </activity>
         <meta-data android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBWbYYQNreo-rbJlbfULEv03nEEs0Zizbk"/>
+            android:value="AIzaSyDj03akBSkbKUxwhtt-V2g7oQBuc4qgHPs"/>
+            <!--android:value="AIzaSyBWbYYQNreo-rbJlbfULEv03nEEs0Zizbk"/>-->
           <!--  android:value=" AIzaSyCp7txo2f8SUGnBiTUnRX0YvnrnR3OaggM"/>-->
 
         <meta-data android:name="com.google.android.gms.version"
@@ -40,7 +41,6 @@
             android:authorities="anywayanyday.pointsonmap">
         </provider>
     </application>
-
 </manifest>
 
 
