@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.WorkWithMapsAPI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +17,10 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+
+import anywayanyday.pointsonmap.Core.DataRequest;
+import anywayanyday.pointsonmap.Core.Dot;
+import anywayanyday.pointsonmap.R;
 
 public class AsyncYaJob extends AsyncDataDownload {
 

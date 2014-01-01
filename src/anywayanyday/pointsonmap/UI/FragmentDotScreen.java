@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.UI;
 
 import java.util.ArrayList;
 
@@ -7,16 +7,23 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FragmentDotScreen extends Fragment implements  AsyncDataDownload.DownloaderListener {
+import com.google.android.gms.maps.MapFragment;
+
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncDataDownload;
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncGoogleJob;
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncYaJob;
+import anywayanyday.pointsonmap.Core.DataRequest;
+import anywayanyday.pointsonmap.Core.Dot;
+import anywayanyday.pointsonmap.R;
+
+public class FragmentDotScreen extends Fragment implements AsyncDataDownload.DownloaderListener {
 
 	private TextView textDotName;
 	private TextView textDotAddress;
@@ -39,8 +46,8 @@ public class FragmentDotScreen extends Fragment implements  AsyncDataDownload.Do
 	void initializeMap(Bundle bundle) {
 
 		dot = (Dot) bundle.getSerializable(FragmentAddDots.DOT);
-		textDotName.setText(dot.name);
-		textDotAddress.setText(dot.address);
+		textDotName.setText(dot.getName());
+		textDotAddress.setText(dot.getAddress());
 		if (MainActivity.currentDownloader.equalsIgnoreCase(MainActivity.GOOGLE_DOWNLOADER)) {
 			asyncDataDownload = new AsyncGoogleJob();
 		} else {
@@ -50,24 +57,6 @@ public class FragmentDotScreen extends Fragment implements  AsyncDataDownload.Do
 		ArrayList<Dot> dots = new ArrayList<Dot>();
 		dots.add(dot);
 		asyncDataDownload.dataDownload(new DataRequest(dots), this);
-	}
-
-
-  /*  @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (!MainActivity.isDualPane)
-                backOnMainFragment();
-            return true;
-        }
-        return true;
-    }*/
-
-
-
-	private void backOnMainFragment() {
-		FragmentAddDots fragmentAddDots = new FragmentAddDots();
-		MainActivity.replaceFragment(fragmentAddDots, getActivity().getFragmentManager().beginTransaction());
 	}
 
 	private void initializeLayout(LayoutInflater inflater) {
@@ -81,7 +70,7 @@ public class FragmentDotScreen extends Fragment implements  AsyncDataDownload.Do
 	public void onDownloaderResponse(DataRequest request, Object response) {
 		Fragment mapFragment = null;
 		if (asyncDataDownload instanceof AsyncGoogleJob) {
-			mapFragment = (MapFragmentWithCreatedListener) response;
+			mapFragment = (MapFragment) response;
 		}
 		if (asyncDataDownload instanceof AsyncYaJob) {
 			mapFragment = FragmentWithMap.newInstance((Bitmap) response);

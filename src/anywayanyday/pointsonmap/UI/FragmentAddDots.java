@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.UI;
 
 import java.util.ArrayList;
 
@@ -28,8 +28,17 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.MapFragment;
 
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncDataDownload;
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncGoogleJob;
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncYaJob;
+import anywayanyday.pointsonmap.Core.DataRequest;
+import anywayanyday.pointsonmap.Core.Dot;
+import anywayanyday.pointsonmap.DataBase.DotsProvider;
+import anywayanyday.pointsonmap.DataBase.NotifyingAsyncQueryHandler;
+import anywayanyday.pointsonmap.R;
+
 public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener, LoaderManager.LoaderCallbacks<Cursor>,
-		NotifyingAsyncQueryHandler.AsyncQueryListener, DotChangedListener {
+        NotifyingAsyncQueryHandler.AsyncQueryListener, DotChangedListener {
 
 	public static final String DOT = "dot";
 	private EditText editDotName;
@@ -89,7 +98,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 	public void onDotStateChanged(Dot dot, int state) {
 		switch (state) {
 		case STATE_DELETE:
-			asyncQueryHandler.startDelete(-1, null, DotsProvider.DOTS_CONTENT_URI, DotsProvider.COLUMN_ID + " = ?", new String[] { String.valueOf(dot.id) });
+			asyncQueryHandler.startDelete(-1, null, DotsProvider.DOTS_CONTENT_URI, DotsProvider.COLUMN_ID + " = ?", new String[]{String.valueOf(dot.getId())});
 			break;
 		default:
 			break;
@@ -139,21 +148,21 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 		listForDots.setAdapter(adapter);
 		listForDots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Dot dot = dotsForMap.get(position);
-				Bundle bundle = new Bundle();
-				bundle.putSerializable(DOT, dot);
-				if (MainActivity.isDualPane) {
-					FragmentDotScreen fragmentDotScreen = (FragmentDotScreen) getActivity().getFragmentManager().findFragmentById(R.id.fragment_dot_screen);
-					fragmentDotScreen.initializeMap(bundle);
-				} else {
-					Fragment dotScreen = new FragmentDotScreen();
-					dotScreen.setArguments(bundle);
-					MainActivity.replaceFragment(dotScreen, getActivity().getFragmentManager().beginTransaction());
-				}
-			}
-		});
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Dot dot = dotsForMap.get(position);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(DOT, dot);
+                if (MainActivity.isDualPane) {
+                    FragmentDotScreen fragmentDotScreen = (FragmentDotScreen) getActivity().getFragmentManager().findFragmentById(R.id.fragment_dot_screen);
+                    fragmentDotScreen.initializeMap(bundle);
+                } else {
+                    Fragment dotScreen = new FragmentDotScreen();
+                    dotScreen.setArguments(bundle);
+                    MainActivity.replaceFragment(dotScreen, getActivity().getFragmentManager().beginTransaction());
+                }
+            }
+        });
 	}
 
 	private void addToDB(DataRequest request, String response) {
@@ -190,13 +199,13 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 		switchSearch = (Switch) view.findViewById(R.id.switchSearch);
 		switchSearch.setChecked(MainActivity.currentDownloader.equalsIgnoreCase(MainActivity.GOOGLE_DOWNLOADER));
 		switchSearch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-				saveSearchSettings(isChecked);
-				getActivity().recreate();
-			}
-		});
+                saveSearchSettings(isChecked);
+                getActivity().recreate();
+            }
+        });
 	}
 
 	void saveSearchSettings(boolean isChecked) {
@@ -209,7 +218,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
 	private String loadSearchSettings() {
 		SharedPreferences sPref = getActivity().getPreferences(Activity.MODE_PRIVATE);
-		return sPref.getString(MainActivity.SEARCH, "anywayanyday.pointsonmap.AsyncGoogleJob");
+		return sPref.getString(MainActivity.SEARCH, "anywayanyday.pointsonmap.WorkWithAPI.AsyncGoogleJob");
 	}
 
 	public void onYaResponse(String[] request, String response) {

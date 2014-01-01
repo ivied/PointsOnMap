@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.WorkWithMapsAPI;
 
 import android.os.Bundle;
 

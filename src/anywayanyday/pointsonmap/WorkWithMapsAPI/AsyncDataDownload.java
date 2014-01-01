@@ -1,8 +1,10 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.WorkWithMapsAPI;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import anywayanyday.pointsonmap.Core.DataRequest;
 
 abstract public class AsyncDataDownload {
 

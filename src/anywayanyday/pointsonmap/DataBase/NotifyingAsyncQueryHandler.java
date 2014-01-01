@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.DataBase;
 
 import java.lang.ref.WeakReference;
 

@@ -1,6 +1,8 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.UI;
 
 import android.content.Context;
+
+import anywayanyday.pointsonmap.Core.Dot;
 
 public interface DotChangedListener {
 	public static int STATE_DELETE = 0;

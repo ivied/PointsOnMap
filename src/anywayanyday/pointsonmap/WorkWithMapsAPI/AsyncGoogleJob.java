@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.WorkWithMapsAPI;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +13,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import anywayanyday.pointsonmap.Core.DataRequest;
+import anywayanyday.pointsonmap.Core.Dot;
+import anywayanyday.pointsonmap.R;
 
 public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWithCreatedListener.MapCreatedListener {
 
@@ -96,8 +100,8 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
 			ArrayList<Dot> dots = request.getDots();
 			for (Dot dot : dots) {
 				try {
-					LatLng geoLoc = getGeoData(dot.address, downloaderListener.getContext());
-					mMap.addMarker(new MarkerOptions().position(geoLoc).title(dot.name + geoLoc.toString()));
+					LatLng geoLoc = getGeoData(dot.getAddress(), downloaderListener.getContext());
+					mMap.addMarker(new MarkerOptions().position(geoLoc).title(dot.getName() + geoLoc.toString()));
 
 				} catch (IOException e) {
 					e.printStackTrace();

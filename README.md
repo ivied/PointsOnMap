@@ -11,9 +11,9 @@ PinkDot
 12-23 13:01:43.349: E/AndroidRuntime(7849): java.lang.IndexOutOfBoundsException: Invalid index 0, size is 0
 12-23 13:01:43.349: E/AndroidRuntime(7849): 	at java.util.ArrayList.throwIndexOutOfBoundsException(ArrayList.java:251)
 12-23 13:01:43.349: E/AndroidRuntime(7849): 	at java.util.ArrayList.get(ArrayList.java:304)
-12-23 13:01:43.349: E/AndroidRuntime(7849): 	at anywayanyday.pointsonmap.AsyncGoogleJob.getGeoData(AsyncGoogleJob.java:64)
-12-23 13:01:43.349: E/AndroidRuntime(7849): 	at anywayanyday.pointsonmap.AsyncGoogleJob.dataDownload(AsyncGoogleJob.java:44)
-12-23 13:01:43.349: E/AndroidRuntime(7849): 	at anywayanyday.pointsonmap.FragmentAddDots.onClick(FragmentAddDots.java:78)
+12-23 13:01:43.349: E/AndroidRuntime(7849): 	at anywayanyday.pointsonmap.WorkWithAPI.AsyncGoogleJob.getGeoData(AsyncGoogleJob.java:64)
+12-23 13:01:43.349: E/AndroidRuntime(7849): 	at anywayanyday.pointsonmap.WorkWithAPI.AsyncGoogleJob.dataDownload(AsyncGoogleJob.java:44)
+12-23 13:01:43.349: E/AndroidRuntime(7849): 	at anywayanyday.pointsonmap.UI.FragmentAddDots.onClick(FragmentAddDots.java:78)
 12-23 13:01:43.349: E/AndroidRuntime(7849): 	at android.view.View.performClick(View.java:4255)
 12-23 13:01:43.349: E/AndroidRuntime(7849): 	at android.view.View$PerformClick.run(View.java:17459)
 12-23 13:01:43.349: E/AndroidRuntime(7849): 	at android.os.Handler.handleCallback(Handler.java:725)
@@ -42,9 +42,9 @@ PinkDot
 12-23 13:16:53.100: E/AndroidRuntime(4069): 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:569)
 12-23 13:16:53.100: E/AndroidRuntime(4069): 	at java.lang.Thread.run(Thread.java:856)
 12-23 13:16:53.100: E/AndroidRuntime(4069): Caused by: java.lang.NullPointerException
-12-23 13:16:53.100: E/AndroidRuntime(4069): 	at anywayanyday.pointsonmap.Dot.getYaDotPostfix(Dot.java:30)
-12-23 13:16:53.100: E/AndroidRuntime(4069): 	at anywayanyday.pointsonmap.AsyncYaJob$DownloadImage.doInBackground(AsyncYaJob.java:101)
-12-23 13:16:53.100: E/AndroidRuntime(4069): 	at anywayanyday.pointsonmap.AsyncYaJob$DownloadImage.doInBackground(AsyncYaJob.java:1)
+12-23 13:16:53.100: E/AndroidRuntime(4069): 	at anywayanyday.pointsonmap.Core.Dot.getYaDotPostfix(Dot.java:30)
+12-23 13:16:53.100: E/AndroidRuntime(4069): 	at anywayanyday.pointsonmap.WorkWithAPI.AsyncYaJob$DownloadImage.doInBackground(AsyncYaJob.java:101)
+12-23 13:16:53.100: E/AndroidRuntime(4069): 	at anywayanyday.pointsonmap.WorkWithAPI.AsyncYaJob$DownloadImage.doInBackground(AsyncYaJob.java:1)
 12-23 13:16:53.100: E/AndroidRuntime(4069): 	at android.os.AsyncTask$2.call(AsyncTask.java:287)
 12-23 13:16:53.100: E/AndroidRuntime(4069): 	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:305)
 12-23 13:16:53.100: E/AndroidRuntime(4069): 	... 5 more

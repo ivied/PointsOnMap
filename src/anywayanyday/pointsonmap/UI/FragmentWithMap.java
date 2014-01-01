@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.UI;
 
 import android.app.Fragment;
 import android.graphics.Bitmap;
@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import anywayanyday.pointsonmap.R;
 
 public class FragmentWithMap extends Fragment {
 	private static Bitmap map;

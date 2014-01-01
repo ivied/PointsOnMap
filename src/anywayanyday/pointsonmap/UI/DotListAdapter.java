@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.UI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +14,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncDataDownload;
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncGoogleJob;
+import anywayanyday.pointsonmap.Core.DataRequest;
+import anywayanyday.pointsonmap.Core.Dot;
+import anywayanyday.pointsonmap.DataBase.NotifyingAsyncQueryHandler;
+import anywayanyday.pointsonmap.R;
+
 public class DotListAdapter extends BaseAdapter implements AsyncDataDownload.DownloaderListener, NotifyingAsyncQueryHandler.AsyncQueryListener {
 	private final Context context;
 	private final LayoutInflater lInflater;
@@ -21,7 +28,7 @@ public class DotListAdapter extends BaseAdapter implements AsyncDataDownload.Dow
 	private final Map<Dot, ViewHolder> dotsHolders = new HashMap<Dot, ViewHolder>();
 	private final DotChangedListener listener;
 
-	DotListAdapter(@NotNull DotChangedListener listener, @NotNull ArrayList<Dot> dots) {
+	public DotListAdapter(@NotNull DotChangedListener listener, @NotNull ArrayList<Dot> dots) {
 		this.context = listener.getContext();
 		this.dots = dots;
 		this.listener = listener;
@@ -62,8 +69,8 @@ public class DotListAdapter extends BaseAdapter implements AsyncDataDownload.Dow
 		dotsHolders.put(dot, holder);
 		getGeoCode(dot);
 
-		holder.textDotAddress.setText(dot.address);
-		holder.textDotName.setText(dot.name);
+		holder.textDotAddress.setText(dot.getAddress());
+		holder.textDotName.setText(dot.getName());
 		holder.textDeleteDot.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -76,7 +83,7 @@ public class DotListAdapter extends BaseAdapter implements AsyncDataDownload.Dow
 	}
 
 	private void getGeoCode(Dot dot) {
-		if (MainActivity.currentDownloader.equalsIgnoreCase("anywayanyday.pointsonmap.AsyncGoogleJob")) {
+		if (MainActivity.currentDownloader.equalsIgnoreCase("anywayanyday.pointsonmap.WorkWithAPI.AsyncGoogleJob")) {
 			AsyncGoogleJob asyncGoogleJob = new AsyncGoogleJob();
 			DataRequest dataRequest = new DataRequest(dot);
 			asyncGoogleJob.dataDownload(dataRequest, this);

@@ -1,17 +1,19 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.UI;
 
-import static anywayanyday.pointsonmap.FragmentAddDots.DOT;
+import static anywayanyday.pointsonmap.UI.FragmentAddDots.DOT;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 
+import anywayanyday.pointsonmap.R;
+
 public class MainActivity extends Activity {
 	public static final String CURRENT_FRAGMENT = "CurrentFragment";
 	public static final String SEARCH = "search";
 	private Fragment currentFragment = new FragmentAddDots();
-	public static final String GOOGLE_DOWNLOADER = "anywayanyday.pointsonmap.AsyncGoogleJob";
-	public static final String YANDEX_DOWNLOADER = "anywayanyday.pointsonmap.AsyncYaJob";
+	public static final String GOOGLE_DOWNLOADER = "anywayanyday.pointsonmap.WorkWithAPI.AsyncGoogleJob";
+	public static final String YANDEX_DOWNLOADER = "anywayanyday.pointsonmap.WorkWithAPI.AsyncYaJob";
 	static boolean isDualPane = false;
 	public static String currentDownloader = GOOGLE_DOWNLOADER;
 

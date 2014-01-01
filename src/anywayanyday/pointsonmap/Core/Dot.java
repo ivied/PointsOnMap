@@ -1,8 +1,10 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.Core;
 
 import java.io.Serializable;
 
 import org.jetbrains.annotations.NotNull;
+
+import anywayanyday.pointsonmap.WorkWithMapsAPI.AsyncYaJob;
 
 public class Dot implements Serializable {
 
@@ -10,11 +12,11 @@ public class Dot implements Serializable {
 
 	public static final String DOT_TYPE = "pm2pnl";
 
-	final String address;
+	private final String address;
 
-	final int id;
-	final String name;
-	final String geoLocation;
+    private final int id;
+	private final String name;
+	private final String geoLocation;
 
 	public Dot(int id, @NotNull String name, @NotNull String geoLocation,
 			@NotNull String address) {
@@ -40,7 +42,7 @@ public class Dot implements Serializable {
 		return geoLocation;
 	}
 
-	String getYaDotPostfix() {
+	public String getYaDotPostfix() {
 		return geoLocation.replace(" ", ",") + "," + DOT_TYPE;
 	}
 

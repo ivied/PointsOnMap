@@ -1,4 +1,4 @@
-package anywayanyday.pointsonmap;
+package anywayanyday.pointsonmap.DataBase;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
