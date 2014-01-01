@@ -31,7 +31,7 @@ public class MainActivity extends Activity {
 	}
 
 	public static void replaceFragment(Fragment fragment, FragmentTransaction fragmentTransaction) {
-		fragmentTransaction.replace(R.id.fragmentContainer, fragment, CURRENT_FRAGMENT);
+		fragmentTransaction.replace(R.id.fragmentContainer, fragment, CURRENT_FRAGMENT).addToBackStack("stack");
 		fragmentTransaction.commit();
 	}
 

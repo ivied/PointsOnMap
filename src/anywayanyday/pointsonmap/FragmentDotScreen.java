@@ -7,6 +7,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FragmentDotScreen extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener {
+public class FragmentDotScreen extends Fragment implements  AsyncDataDownload.DownloaderListener {
 
 	private TextView textDotName;
 	private TextView textDotAddress;
-	private Button buttonBack;
 	private RelativeLayout frameMap;
 	private View view;
 	private Dot dot;
@@ -52,11 +52,18 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
 		asyncDataDownload.dataDownload(new DataRequest(dots), this);
 	}
 
-	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.buttonBack && !MainActivity.isDualPane)
-			backOnMainFragment();
-	}
+
+  /*  @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (!MainActivity.isDualPane)
+                backOnMainFragment();
+            return true;
+        }
+        return true;
+    }*/
+
+
 
 	private void backOnMainFragment() {
 		FragmentAddDots fragmentAddDots = new FragmentAddDots();
@@ -67,8 +74,6 @@ public class FragmentDotScreen extends Fragment implements View.OnClickListener,
 		view = inflater.inflate(R.layout.dot_on_map, null);
 		frameMap = (RelativeLayout) view.findViewById(R.id.frameMap);
 		textDotName = (TextView) view.findViewById(R.id.textDotName);
-		buttonBack = (Button) view.findViewById(R.id.buttonBack);
-		buttonBack.setOnClickListener(this);
 		textDotAddress = (TextView) view.findViewById(R.id.textDotAddress);
 	}
 

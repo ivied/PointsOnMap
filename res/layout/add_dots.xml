@@ -32,7 +32,7 @@
                 android:gravity="center"
                 android:id="@+id/textView"
                 android:layout_marginBottom="10dp"
-                android:layout_toLeftOf="@+id/switchSearch" />
+                android:layout_alignParentRight="true" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -99,19 +99,19 @@
                 android:text="@string/textDotsOnMap"
                 android:id="@+id/textDotOnMap"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="10dp"/>
+                android:layout_alignParentLeft="true" />
 
             <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/switchSearch"
-                android:layout_alignBottom="@+id/textView"
-                android:layout_toRightOf="@+id/textDotOnMap"
-                android:textOff="Ya"
-                android:textOn="Gg"
+                android:textOff="Yandex"
+                android:textOn="Google"
                 android:enabled="true"
-                android:checked="true" />
+                android:checked="true"
+                android:layout_alignTop="@+id/textDotOnMap"
+                android:layout_toRightOf="@+id/textDotOnMap"
+                android:layout_alignParentRight="true" />
 
         </RelativeLayout>
 
