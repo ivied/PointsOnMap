@@ -52,7 +52,8 @@ public class AsyncGoogleJob extends AsyncDataDownload implements MapFragmentWith
 			Geocoder geocoder = new Geocoder(downloaderListener.getContext());
 			try {
 				List<Address> addresses = geocoder.getFromLocationName(dataRequest.getDot().getAddress(), MAX_GEOCODE_RESULTS);
-				Address address = addresses.get(0);
+				if (addresses.size() == 0) return null;
+                Address address = addresses.get(0);
 				return new LatLng(address.getLongitude(), address.getLatitude());
 			} catch (IOException e) {
 				e.printStackTrace();

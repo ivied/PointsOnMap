@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="horizontal"
@@ -9,9 +10,11 @@
         android:layout_height="fill_parent"
         android:name="anywayanyday.pointsonmap.FragmentAddDots"
         android:layout_width="400dp"
-        android:layout_marginRight="10dp"/>
+        android:layout_marginRight="10dp"
+        tools:layout="@layout/add_dots" />
     <fragment android:id="@+id/fragment_dot_screen"
         android:layout_height="fill_parent"
         android:name="anywayanyday.pointsonmap.FragmentDotScreen"
-        android:layout_width="fill_parent" />
+        android:layout_width="fill_parent"
+        tools:layout="@layout/dot_on_map" />
 </LinearLayout>
