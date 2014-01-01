@@ -17,15 +17,17 @@ public class DataRequest {
     private String dotName;
     private String dotAddress;
     private int requestType;
+    private Dot dot;
 
     public DataRequest( @NotNull ArrayList<Dot> dots){
         this.dots = dots;
         requestType = MAP_TO_IMAGE_VIEW;
     }
 
-    public DataRequest (@NotNull  String dotAddress,@NotNull  String dotName){
-        this.dotAddress = dotAddress;
-        this.dotName = dotName;
+    public DataRequest (@NotNull  Dot dot){
+        this.dotAddress = dot.getAddress();
+        this.dotName = dot.getName();
+        this.dot = dot;
         requestType = GEO_DATA;
     }
 
@@ -38,11 +40,7 @@ public class DataRequest {
     }
 
 
-    public String getDotName() {
-        return dotName;
-    }
-
-    public String getDotAddress() {
-        return dotAddress;
+    public Dot getDot() {
+        return dot;
     }
 }

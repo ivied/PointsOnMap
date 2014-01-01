@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<item name="fragment_with_map" type="id"/></resources>
+<item name="fragment_with_map" type="id"/>
+    <item name="toast_wrong_address" type="id">Попробуйте ввести другой адресс точки</item>
+</resources>

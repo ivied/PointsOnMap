@@ -69,7 +69,7 @@ public class AsyncYaJob extends AsyncDataDownload {
         @Override
         protected String doInBackground(DataRequest... dataRequest)  {
             this.request = dataRequest[0];
-            String address = request.getDotAddress();
+            String address = request.getDot().getAddress();
             address = address.replace(" ", "+");
             HttpGet httpRequest = isInMoscow ? new HttpGet(REQUEST_IN_MOSCOW + address) : new HttpGet(REQUEST_IN_WORLD + address);
             return getGeoData(httpRequest(httpRequest));

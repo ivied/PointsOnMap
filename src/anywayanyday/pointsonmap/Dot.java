@@ -26,6 +26,18 @@ public class Dot implements Serializable{
        return AsyncYaJob.YANDEX_MAP + getYaDotPostfix();
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getGeoLocation() {
+        return geoLocation;
+    }
+
     String getYaDotPostfix() {
         return geoLocation.replace(" ", ",") + "," + DOT_TYPE;
     }

@@ -1,7 +1,7 @@
 package anywayanyday.pointsonmap;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,20 +10,24 @@ import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class DotListAdapter extends BaseAdapter {
-    Context context;
-    LayoutInflater lInflater;
-    ArrayList<Dot> dots;
+public class DotListAdapter extends BaseAdapter implements AsyncDataDownload.DownloaderListener , NotifyingAsyncQueryHandler.AsyncQueryListener {
+    private final Context context;
+    private LayoutInflater lInflater;
+    private ArrayList<Dot> dots;
+    private Map<Dot,ViewHolder> dotsHolders = new HashMap<Dot, ViewHolder>();
+    private DotChangedListener listener;
 
 
-    DotListAdapter(@NotNull Context context, @NotNull ArrayList<Dot> dots) {
-        this.context = context;
+    DotListAdapter(@NotNull DotChangedListener listener, @NotNull ArrayList<Dot> dots) {
+        this.context = listener.getContext();
         this.dots = dots;
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+
     @Override
     public int getCount() {
         return dots.size();
@@ -54,17 +58,18 @@ public class DotListAdapter extends BaseAdapter {
 
         ViewHolder holder = (ViewHolder) view.getTag();
         final Dot dot = (Dot) getItem(position);
-        String geoCode = getGeoCode(dot);
+        dotsHolders.put(dot, holder);
+        getGeoCode(dot);
+
 
         holder.textDotAddress.setText(dot.address);
         holder.textDotName.setText(dot.name);
-        holder.textDotGeoCode.setText(geoCode);
 
         final View finalView = view;
         holder.textDeleteDot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finalView.getContext().getContentResolver().delete(DotsProvider.DOTS_CONTENT_URI, DotsProvider.COLUMN_ID + " = ?", new String[]{String.valueOf(dot.id)});
+                listener.onDotDeleted(dot);
                 dots.remove(dot);
                 notifyDataSetChanged();
             }
@@ -72,15 +77,36 @@ public class DotListAdapter extends BaseAdapter {
         return view;
     }
 
-    private String getGeoCode(Dot dot) {
+    private void getGeoCode(Dot dot) {
         if( MainActivity.currentDownloader.equalsIgnoreCase("anywayanyday.pointsonmap.AsyncGoogleJob") ){
-            try {
-                return  AsyncGoogleJob.getGeoData(dot.address, context).toString();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                AsyncGoogleJob asyncGoogleJob = new AsyncGoogleJob();
+                DataRequest dataRequest = new DataRequest(dot);
+                asyncGoogleJob.dataDownload( dataRequest , this);
         }
-        return "";
+    }
+
+    @Override
+    public void onDownloaderResponse(DataRequest request, Object response) {
+        ViewHolder holder = dotsHolders.get(request.getDot());
+        if (holder != null){
+
+            holder.textDotGeoCode.setText(response.toString());
+        }
+    }
+
+    @Override
+    public void sendToast(String text) {
+
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
+    @Override
+    public void onQueryComplete(int token, Object cookie, Cursor cursor) {
+
     }
 
     static class ViewHolder {

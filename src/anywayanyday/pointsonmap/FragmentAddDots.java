@@ -29,7 +29,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 
-public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class FragmentAddDots extends Fragment implements View.OnClickListener, AsyncDataDownload.DownloaderListener, LoaderManager.LoaderCallbacks<Cursor>,NotifyingAsyncQueryHandler.AsyncQueryListener, DotChangedListener {
 
     public static final String DOT = "dot";
     private EditText editDotName;
@@ -44,12 +44,13 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     private ArrayList<Dot> dotsForMap = new ArrayList<Dot>();
     public static final String MAP_FRAGMENT_TAG = "map";
     private static final int URL_LOADER = 0;
+    private NotifyingAsyncQueryHandler asyncQueryHandler ;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeLayout(inflater);
-
+        asyncQueryHandler = new NotifyingAsyncQueryHandler(getContext(), this);
         getLoaderManager().initLoader(URL_LOADER, null, this);
         return view;
     }
@@ -71,12 +72,23 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     @Override
     public void onClick(View v) {
         String dotName = editDotName.getText().toString();
+        String dotAddress = editDotAddress.getText().toString();
         if(dotName.trim().equalsIgnoreCase("")) {
             sendToast(getResources().getString(R.id.toast_wrong_name));
             return;
         }
-        asyncDataDownload.dataDownload(new DataRequest(editDotAddress.getText().toString(), dotName), this);
+        if(dotAddress.trim().equalsIgnoreCase("")){
+            sendToast(getResources().getString(R.id.toast_wrong_address));
+            return;
+        }
+        asyncDataDownload.dataDownload(new DataRequest(new Dot (-1, dotName, "", editDotAddress.getText().toString())),  this);
 
+    }
+
+    @Override
+    public void onDotDeleted(Dot dot) {
+        asyncQueryHandler.startDelete(-1, null, DotsProvider.DOTS_CONTENT_URI, DotsProvider.COLUMN_ID + " = ?", new String[]{String.valueOf(dot.id)});
+        renewLayout();
     }
 
     @Override
@@ -118,7 +130,7 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
     }
 
     private void initializeDotsGrid() {
-        adapter = new DotListAdapter(this.getContext(),  dotsForMap);
+        adapter = new DotListAdapter(this,  dotsForMap);
         listForDots.setAdapter(adapter);
         listForDots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -144,10 +156,11 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
     private void addToDB(DataRequest request, String response) {
         ContentValues cv = new ContentValues();
-        cv.put(DotsProvider.COLUMN_NAME, request.getDotName());
+        cv.put(DotsProvider.COLUMN_NAME, request.getDot().getName());
         cv.put(DotsProvider.COLUMN_GEO_LOCATION, response);
-        cv.put(DotsProvider.COLUMN_ADDRESS, request.getDotAddress());
-        getActivity().getContentResolver().insert(DotsProvider.DOTS_CONTENT_URI, cv);
+        cv.put(DotsProvider.COLUMN_ADDRESS, request.getDot().getAddress());
+        asyncQueryHandler.startInsert(-1, null, DotsProvider.DOTS_CONTENT_URI, cv);
+        renewLayout();
     }
 
 
@@ -174,12 +187,6 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
         buttonAdd = (Button) view.findViewById(R.id.buttonAdd);
         buttonAdd.setOnClickListener(this);
         listForDots = (ListView) view.findViewById(R.id.listForDots);
-        listForDots.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                renewLayout();
-            }
-        });
         frameMap = (RelativeLayout) view.findViewById(R.id.frameMapOnAdd);
         switchSearch = (Switch) view.findViewById(R.id.switchSearch);
         switchSearch.setChecked(MainActivity.currentDownloader.equalsIgnoreCase(MainActivity.GOOGLE_DOWNLOADER));
@@ -242,6 +249,11 @@ public class FragmentAddDots extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    @Override
+    public void onQueryComplete(int token, Object cookie, Cursor cursor) {
 
     }
 }
