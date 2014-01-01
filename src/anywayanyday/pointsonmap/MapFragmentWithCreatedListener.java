@@ -2,33 +2,32 @@ package anywayanyday.pointsonmap;
 
 import android.os.Bundle;
 
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
-
 
 public class MapFragmentWithCreatedListener extends MapFragment {
 
-    private MapCreatedListener listener;
+	private static MapCreatedListener listener;
 
-    public interface MapCreatedListener {
-        void onGoogleMapCreation();
-    }
+	public interface MapCreatedListener {
+		void onGoogleMapCreation();
+	}
 
-    MapFragmentWithCreatedListener (MapCreatedListener mapCreatedListener){
-        newInstance();
-        listener = mapCreatedListener;
-    }
+	public static MapFragmentWithCreatedListener newInstanceCreate(MapCreatedListener mapCreatedListener) {
+		MapFragmentWithCreatedListener mapFragmentWithCreatedListener = new MapFragmentWithCreatedListener();
+		listener = mapCreatedListener;
+		return mapFragmentWithCreatedListener;
+	}
 
-    public MapFragmentWithCreatedListener(){
+	public MapFragmentWithCreatedListener() {
+		super();
+	}
 
-    }
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		if (listener != null) {
+			listener.onGoogleMapCreation();
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-       if(listener != null){
-            listener.onGoogleMapCreation();
-
-       }
-    }
+		}
+	}
 }

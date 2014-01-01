@@ -1,48 +1,50 @@
 package anywayanyday.pointsonmap;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 
-public class Dot implements Serializable{
+import org.jetbrains.annotations.NotNull;
 
-    public static final String DOT_TYPE = "pm2pnl";
+public class Dot implements Serializable {
 
-    final String address;
+	private static final long serialVersionUID = 1L;
 
+	public static final String DOT_TYPE = "pm2pnl";
 
-    final int id;
-    final String name;
-    final String geoLocation;
+	final String address;
 
-    public Dot(int id,@NotNull  String name,@NotNull  String geoLocation,@NotNull  String address) {
-        this.id = id;
-        this.name = name;
-        this.geoLocation = geoLocation;
-        this.address = address;
-    }
+	final int id;
+	final String name;
+	final String geoLocation;
 
-    String getYaMapUrl(){
-       return AsyncYaJob.YANDEX_MAP + getYaDotPostfix();
-    }
+	public Dot(int id, @NotNull String name, @NotNull String geoLocation,
+			@NotNull String address) {
+		this.id = id;
+		this.name = name;
+		this.geoLocation = geoLocation;
+		this.address = address;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	String getYaMapUrl() {
+		return AsyncYaJob.YANDEX_MAP + getYaDotPostfix();
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public String getGeoLocation() {
-        return geoLocation;
-    }
+	public String getName() {
+		return name;
+	}
 
-    String getYaDotPostfix() {
-        return geoLocation.replace(" ", ",") + "," + DOT_TYPE;
-    }
+	public String getGeoLocation() {
+		return geoLocation;
+	}
 
-    public int getId() {
-        return id;
-    }
+	String getYaDotPostfix() {
+		return geoLocation.replace(" ", ",") + "," + DOT_TYPE;
+	}
+
+	public int getId() {
+		return id;
+	}
 }
